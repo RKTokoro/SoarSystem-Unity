@@ -50,8 +50,8 @@ public class TVRSerialHandler : MonoBehaviour
                 if (this.serial.BytesToRead > 0)
                 {
                     int bytesRead = this.serial.Read(buffer, 0, buffer.Length);
-                    string message = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    Debug.Log(message);
+                    message = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    // Debug.Log(message);
                 }
             }
             catch (System.Exception e)
