@@ -6,11 +6,15 @@ public class TVRFloor : MonoBehaviour
 {
     private TVRParser _parser;
     private double[,] _floorData;
-
+    
     private GameObject[,] _debugFloorTiles;
     private Material[,] _debugFloorMaterials;
     
     private bool _floorIsSpawned = false;
+
+    private static readonly float ModuleSize = 0.5f;
+    private static readonly int SensorNum = 6;
+    private static readonly float SensorSize = ModuleSize / SensorNum;
     
     // Start is called before the first frame update
     void Start()
@@ -40,6 +44,12 @@ public class TVRFloor : MonoBehaviour
     
     private void SpawnFloor()
     {
+        Vector3 floorOrigin = new Vector3(
+            -(_floorData.GetLength(0) * SensorSize) / 2,
+            0,
+            (_floorData.GetLength(1) * SensorSize) / 2
+            );
+        
         _debugFloorTiles = new GameObject[_floorData.GetLength(0),_floorData.GetLength(1)];
         _debugFloorMaterials = new Material[_floorData.GetLength(0),_floorData.GetLength(1)];
         
@@ -48,7 +58,17 @@ public class TVRFloor : MonoBehaviour
             for (int j = 0; j < _floorData.GetLength(1); j++)
             {
                 GameObject tile = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                tile.transform.position = new Vector3(i, j, 0);
+                tile.transform.position = new Vector3(
+                    floorOrigin.x + j * SensorSize,
+                    0,
+                    floorOrigin.z - i * SensorSize
+                    );
+                tile.transform.rotation = Quaternion.Euler(90, 0, 0);
+                tile.transform.localScale = new Vector3(
+                    SensorSize,
+                    SensorSize,
+                    0.0f
+                    );
                 tile.transform.parent = this.transform;
                 tile.name = $"FloorTile_{i}_{j}";
                 
