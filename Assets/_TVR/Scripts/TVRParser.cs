@@ -18,6 +18,7 @@ public class TVRParser : MonoBehaviour
         if (_serialHandler.message != null)
         {
             floorData = ParseStringToDoubleArray(_serialHandler.message, _rows, _columns);
+            SortFloorData();
         }
         
         Debug.Log(floorData[0, 0]);
@@ -63,4 +64,40 @@ public class TVRParser : MonoBehaviour
 
         return doubleArray;
     }
+
+    private void SortFloorData()
+    {
+        double[,] sortedFloorData = new double[_rows, _columns];
+        for(int i = 0; i < _rows; i++)
+        {
+            for(int j = 0; j < _columns; j++)
+            {
+                sortedFloorData[i, j] = floorData[SortMatrix[i, j, 0], SortMatrix[i, j, 1]];
+            }
+        }
+        
+        floorData = sortedFloorData;
+    }
+    
+    private static readonly int[,,] SortMatrix = new int[6,6,2]
+    {
+        {
+            {5, 5}, {5, 4}, {5, 1}, {5, 0}, {4, 3}, {4, 2}
+        },
+        {
+            {5, 3}, {5, 2}, {4, 5}, {4, 4}, {4, 1}, {4, 0}
+        },
+{
+            {3, 5}, {3, 4}, {3, 1}, {3, 0}, {2, 3}, {2, 2}
+        },
+        {
+            {3, 3}, {3, 2}, {2, 5}, {2, 4}, {2, 1}, {2, 0}
+        },
+        {
+            {1, 5}, {1, 4}, {1, 1}, {1, 0}, {0, 3}, {0, 2}
+        },
+        {
+            {1, 3}, {1, 2}, {0, 5}, {0, 4}, {0, 1}, {0, 0}
+        }
+    };
 }
