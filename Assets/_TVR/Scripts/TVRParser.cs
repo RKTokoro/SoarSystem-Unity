@@ -19,8 +19,6 @@ public class TVRParser : MonoBehaviour
         {
             floorData = ParseStringToDoubleArray(_serialHandler.message, _rows, _columns);
         }
-        
-        Debug.Log(floorData[0, 0]);
     }
     
     private double[,] ParseStringToDoubleArray(string data, int rows, int columns)
