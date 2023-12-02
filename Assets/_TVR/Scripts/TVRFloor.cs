@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TVRFloor : MonoBehaviour
 {
-    private TVRParser _parser;
+    private TVRFloorDataManager _floorDataManager;
     private double[,] _floorData;
     
     private GameObject[,] _debugFloorTiles;
@@ -19,16 +19,14 @@ public class TVRFloor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _parser = FindObjectOfType<TVRParser>();
+        _floorDataManager = FindObjectOfType<TVRFloorDataManager>();
     }
-    
-    
 
     // Update is called once per frame
     void Update()
     {
         // update floor data
-        _floorData = _parser.floorData;
+        _floorData = _floorDataManager.FloorData;
         
         if(_floorData != null && !_floorIsSpawned)
         {
@@ -109,7 +107,7 @@ public class TVRFloor : MonoBehaviour
                 _debugFloorMaterials[i, j].color = 
                     Color.HSVToRGB(
                         0.0f, 
-                        (float)(_floorData[i, j] / 100000.0), 
+                        (float)_floorData[i, j], 
                         0.8f
                         );
             }
