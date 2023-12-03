@@ -53,10 +53,15 @@ public class TVRSoarBoard : MonoBehaviour
     {
         UpdateMeanPressures();
         UpdateModuleColor();
-
+        
         if (isSoaring)
         {
             Soar();
+        }
+        
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            isSoaring = !isSoaring;
         }
     }
     
