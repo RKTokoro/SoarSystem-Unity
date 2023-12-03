@@ -7,6 +7,8 @@ using UnityEngine.Serialization;
 public class TVRSoarBoard : MonoBehaviour
 {
     public bool isSoaring = false;
+    public bool isAscending = false;
+    public bool isDescending = false;
     
     private Transform _transform;
     
@@ -21,10 +23,13 @@ public class TVRSoarBoard : MonoBehaviour
     
     private static double[,] _meanPressures = new double[2, 2];
     
+    private Vector3 forceLF, forceRF, forceLB, forceRB;
+    
     public float m = 1.0f;  // mass
     public Vector3 v;  // velocity
     public Vector3 a;  // acceleration
     public float ka = 1.0f;
+    public float av = 1.0f;  // vertical acceleration
     
     // variables for rotation
     // soar board only rotates around y axis
@@ -57,6 +62,9 @@ public class TVRSoarBoard : MonoBehaviour
     {
         UpdateMeanPressures();
         UpdateModuleColor();
+
+        isAscending = OVRInput.Get(OVRInput.RawButton.Y);
+        isDescending = OVRInput.Get(OVRInput.RawButton.X);
         
         if (isSoaring)
         {
@@ -150,14 +158,48 @@ public class TVRSoarBoard : MonoBehaviour
     private Vector3 CalcAcceleration(Vector3 v)
     {
         Vector3 acc = Vector3.zero;
+        Quaternion rot = _transform.rotation;
         
-        acc.x = 
-            ((float)(-_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] + _meanPressures[1, 1]) / m) 
-            - ka * v.x;
-        acc.y = 0.0f;  // write it later
-        acc.z = 
-            ((float)(_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] - _meanPressures[1, 1]) / m) 
-            - ka * v.z;
+        forceLF = rot * new Vector3(
+            -(float)_meanPressures[0, 0],
+            0.0f,
+            (float)_meanPressures[0, 0]
+        );
+        
+        forceRF = rot * new Vector3(
+            (float)_meanPressures[0, 1],
+            0.0f,
+            (float)_meanPressures[0, 1]
+        );
+        
+        forceLB = rot * new Vector3(
+            -(float)_meanPressures[1, 0],
+            0.0f,
+            -(float)_meanPressures[1, 0]
+        );
+        
+        forceRB = rot * new Vector3(
+            (float)_meanPressures[1, 1],
+            0.0f,
+            -(float)_meanPressures[1, 1]
+        );
+        
+        Vector3 totalForce = forceLF + forceRF + forceLB + forceRB;
+        acc.x += totalForce.x / m - ka * v.x;
+        acc.z += totalForce.z / m - ka * v.z;
+        
+        if (isAscending)
+        {
+            acc.y = av - ka * v.y;;
+        }
+        else if (isDescending)
+        {
+            acc.y = -av - ka * v.y;
+        }
+        else
+        {
+            acc.y = 0.0f - ka * v.y;
+        }
         
         return acc;
     }
@@ -195,6 +237,6 @@ public class TVRSoarBoard : MonoBehaviour
     
     private void Rotate()
     {
-        _transform.Rotate(0, w * Time.deltaTime, 0);
+        _transform.Rotate(0, w * Mathf.Rad2Deg * Time.deltaTime, 0);
     }
 }
