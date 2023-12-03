@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class TVRSoarBoard : MonoBehaviour
 {
+    public bool isSoaring = false;
+    
+    private Transform _transform;
+    
     private GameObject[,] _modules = new GameObject[2,2];
     [SerializeField] private GameObject moduleFL;
     [SerializeField] private GameObject moduleFR;
@@ -15,9 +20,21 @@ public class TVRSoarBoard : MonoBehaviour
     
     private static double[,] _meanPressures = new double[2, 2];
     
+    public float m = 1.0f;  // mass
+    public Vector3 v;  // velocity
+    public Vector3 a;  // acceleration
+    
+    // variables for rotation
+    // soar board only rotates around y axis
+    public float i = 1.0f;  // moment of inertia
+    public float w;  // angular velocity
+    public float b; // angular acceleration
+    
     // Start is called before the first frame update
     void Start()
     {
+        _transform = GetComponent<Transform>();
+        
         _floorDataManager = FindObjectOfType<TVRFloorDataManager>();
         
         _modules[0,0] = moduleFL;
@@ -36,6 +53,11 @@ public class TVRSoarBoard : MonoBehaviour
     {
         UpdateMeanPressures();
         UpdateModuleColor();
+
+        if (isSoaring)
+        {
+            Soar();
+        }
     }
     
     private static void UpdateMeanPressures()
@@ -89,5 +111,40 @@ public class TVRSoarBoard : MonoBehaviour
                 _moduleRenderers[i, j].material.color = Color.Lerp(Color.white, Color.red, (float)_meanPressures[i, j]);
             }
         }
+    }
+
+    private void Soar()
+    {
+        a = CalcAcceleration();
+        v = CalcVelocity(v, a);
+        Move();
+        Rotate();
+    }
+    
+    private Vector3 CalcAcceleration()
+    {
+        Vector3 acc = Vector3.zero;
+        
+        acc.x = (float)(-_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] + _meanPressures[1, 1]) / m;
+        acc.y = 0.0f;  // write it later
+        acc.z = (float)(_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] - _meanPressures[1, 1]) / m;
+        
+        return acc;
+    }
+
+    private Vector3 CalcVelocity(Vector3 pv, Vector3 a)
+    {
+        Vector3 v = pv + a * Time.deltaTime;
+        return v;
+    }
+
+    private void Move()
+    {
+        _transform.position += v * Time.deltaTime;
+    }
+    
+    private void Rotate()
+    {
+        _transform.Rotate(0, w * Time.deltaTime, 0);
     }
 }
