@@ -7,6 +7,8 @@ using UnityEngine.Serialization;
 public class TVRSoarBoard : MonoBehaviour
 {
     public bool isSoaring = false;
+    public bool isAscending = false;
+    public bool isDescending = false;
     
     private Transform _transform;
     
@@ -19,12 +21,20 @@ public class TVRSoarBoard : MonoBehaviour
     
     private static TVRFloorDataManager _floorDataManager;
     
-    private static double[,] _meanPressures = new double[2, 2];
+    private double[,] _pressuresMean = new double[2, 2];
+    private double[,] _pressuresNormalized = new double[2, 2];
+    private double[,] _pressuresMeanMax = new double[2, 2];
+    private double[,] _pressuresMeanMin = new double[2, 2];
+    
+    private static bool isCalibrationSequence = false;
+    
+    private Vector3 forceLF, forceRF, forceLB, forceRB;
     
     public float m = 1.0f;  // mass
     public Vector3 v;  // velocity
     public Vector3 a;  // acceleration
     public float ka = 1.0f;
+    public float av = 1.0f;  // vertical acceleration
     
     // variables for rotation
     // soar board only rotates around y axis
@@ -57,40 +67,54 @@ public class TVRSoarBoard : MonoBehaviour
     {
         UpdateMeanPressures();
         UpdateModuleColor();
+
+        isAscending = OVRInput.Get(OVRInput.RawButton.Y);
+        isDescending = OVRInput.Get(OVRInput.RawButton.X);
         
         if (isSoaring)
         {
             Soar();
         }
+
+        if (isCalibrationSequence)
+        {
+            Calibrate();
+        }
         
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space)  || OVRInput.GetDown(OVRInput.RawButton.A))
         {
             isSoaring = !isSoaring;
             Reset();
         }
+        
+        if(Input.GetKeyDown(KeyCode.V))
+        {
+            isCalibrationSequence = true;
+            Debug.Log("SoarBoard Calibration sequence started.");
+        }
     }
     
-    private static void UpdateMeanPressures()
+    private void UpdateMeanPressures()
     {
         // モジュールごとのセンサーの数
         int sensorsPerModule = 3;
 
         // 左前
-        _meanPressures[0, 0] = 
+        _pressuresMean[0, 0] = 
             CalculateAveragePressure(
                 _floorDataManager.FloorData,
                 0, 0, sensorsPerModule, sensorsPerModule);
         // 右前
-        _meanPressures[0, 1] = 
+        _pressuresMean[0, 1] = 
             CalculateAveragePressure(
                 _floorDataManager.FloorData, 
                 0, sensorsPerModule, sensorsPerModule, TVRFloorDataManager.Columns);
         // 左後
-        _meanPressures[1, 0] = 
+        _pressuresMean[1, 0] = 
             CalculateAveragePressure(_floorDataManager.FloorData, 
                 sensorsPerModule, 0, TVRFloorDataManager.Rows, sensorsPerModule);
         // 右後
-        _meanPressures[1, 1] = 
+        _pressuresMean[1, 1] = 
             CalculateAveragePressure(_floorDataManager.FloorData, 
                 sensorsPerModule, sensorsPerModule, TVRFloorDataManager.Rows, TVRFloorDataManager.Columns);
     }
@@ -118,7 +142,7 @@ public class TVRSoarBoard : MonoBehaviour
         {
             for (int j = 0; j < _modules.GetLength(1); j++)
             {
-                _moduleRenderers[i, j].material.color = Color.Lerp(Color.white, Color.red, (float)_meanPressures[i, j]);
+                _moduleRenderers[i, j].material.color = Color.Lerp(Color.white, Color.red, (float)_pressuresMean[i, j]);
             }
         }
     }
@@ -137,27 +161,62 @@ public class TVRSoarBoard : MonoBehaviour
 
     private void Soar()
     {
-        a = CalcAcceleration(v);
+        _pressuresNormalized = Normalize(_pressuresMean, _pressuresMeanMin, _pressuresMeanMax);
+        a = CalcAcceleration(_pressuresNormalized, v);
         v = CalcVelocity(v, a);
 
-        b = CalcAngularAcceleration(w);
+        b = CalcAngularAcceleration(_pressuresNormalized, w);
         w = CalcAngularVelocity(w, b);
         
         Move();
         Rotate();
     }
     
-    private Vector3 CalcAcceleration(Vector3 v)
+    private Vector3 CalcAcceleration(double[,] floorData, Vector3 v)
     {
         Vector3 acc = Vector3.zero;
+        Quaternion rot = _transform.rotation;
         
-        acc.x = 
-            ((float)(-_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] + _meanPressures[1, 1]) / m) 
-            - ka * v.x;
-        acc.y = 0.0f;  // write it later
-        acc.z = 
-            ((float)(_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] - _meanPressures[1, 1]) / m) 
-            - ka * v.z;
+        forceLF = rot * new Vector3(
+            -(float)floorData[0, 0],
+            0.0f,
+            (float)floorData[0, 0]
+        );
+        
+        forceRF = rot * new Vector3(
+            (float)floorData[0, 1],
+            0.0f,
+            (float)floorData[0, 1]
+        );
+        
+        forceLB = rot * new Vector3(
+            -(float)floorData[1, 0],
+            0.0f,
+            -(float)floorData[1, 0]
+        );
+        
+        forceRB = rot * new Vector3(
+            (float)floorData[1, 1],
+            0.0f,
+            -(float)floorData[1, 1]
+        );
+        
+        Vector3 totalForce = forceLF + forceRF + forceLB + forceRB;
+        acc.x += totalForce.x / m - ka * v.x;
+        acc.z += totalForce.z / m - ka * v.z;
+        
+        if (isAscending)
+        {
+            acc.y = av - ka * v.y;;
+        }
+        else if (isDescending)
+        {
+            acc.y = -av - ka * v.y;
+        }
+        else
+        {
+            acc.y = 0.0f - ka * v.y;
+        }
         
         return acc;
     }
@@ -168,14 +227,14 @@ public class TVRSoarBoard : MonoBehaviour
         return v;
     }
     
-    private float CalcAngularAcceleration(float w)
+    private float CalcAngularAcceleration(double[,] floorData, float w)
     {
         float acc = 0.0f;
 
-        acc = (((2.0f * (float)_meanPressures[0, 0]) 
-               - (2.0f * (float)_meanPressures[0, 1]) 
-               - (2.0f * (float)_meanPressures[1, 0]) 
-               + (2.0f * (float)_meanPressures[1, 1])) 
+        acc = (((2.0f * (float)floorData[0, 0]) 
+               - (2.0f * (float)floorData[0, 1]) 
+               - (2.0f * (float)floorData[1, 0]) 
+               + (2.0f * (float)floorData[1, 1])) 
               / (4 * momentOfInertia)) 
               - kb * w;
         
@@ -195,6 +254,64 @@ public class TVRSoarBoard : MonoBehaviour
     
     private void Rotate()
     {
-        _transform.Rotate(0, w * Time.deltaTime, 0);
+        _transform.Rotate(0, w * Mathf.Rad2Deg * Time.deltaTime, 0);
+    }
+
+    private void Calibrate()
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                double currentValue = _pressuresMean[i, j];
+
+                // 最小値を更新
+                if (currentValue < _pressuresMeanMin[i, j] || _pressuresMeanMin[i, j] == 0)
+                {
+                    _pressuresMeanMin[i, j] = currentValue;
+                }
+
+                // 最大値を更新
+                if (currentValue > _pressuresMeanMax[i, j])
+                {
+                    _pressuresMeanMax[i, j] = currentValue;
+                }
+            }
+        }
+        
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            isCalibrationSequence = false;
+            Debug.Log("SoarBoard Calibration sequence ended.");
+        }
+    }
+
+    private double[,] Normalize(double[,] data, double[,] minData, double[,] maxData)
+    {
+        int rows = data.GetLength(0);
+        int columns = data.GetLength(1);
+        double[,] normalizedData = new double[rows, columns];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < columns; j++)
+            {
+                double min = minData[i, j]; // 最小値
+                double max = maxData[i, j]; // 最大値
+
+                // 除算の分母が0にならないようにチェック
+                if (max - min != 0)
+                {
+                    normalizedData[i, j] = (data[i, j] - min) / (max - min);
+                }
+                else
+                {
+                    // 最大値とベースラインが同じ場合、値を0または1に設定
+                    normalizedData[i, j] = (data[i, j] == max) ? 1 : 0;
+                }
+            }
+        }
+
+        return normalizedData;
     }
 }

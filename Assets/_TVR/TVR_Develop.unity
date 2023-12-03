@@ -573,16 +573,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSoaring: 0
+  isAscending: 0
+  isDescending: 0
   moduleFL: {fileID: 1088788013}
   moduleFR: {fileID: 1105422847}
   moduleBL: {fileID: 1819591525}
   moduleBR: {fileID: 83329721}
-  m: 0.2
+  m: 0.05
   v: {x: 0, y: 0, z: 0}
   a: {x: 0, y: 0, z: 0}
   ka: 1
+  av: 5
   _moduleRadius: 0.5
-  momentOfInertia: 0.1
+  momentOfInertia: 0.8
   w: 0
   b: 0
   kb: 1
@@ -634,7 +637,7 @@ MonoBehaviour:
   gridY: 20
   gridZ: 20
   spacing: 2
-  size: 0.1
+  size: 1
   debugCubeAlpha: 0.2
 --- !u!1 &944878230
 GameObject:
