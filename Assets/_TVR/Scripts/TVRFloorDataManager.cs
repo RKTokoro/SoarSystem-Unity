@@ -22,12 +22,12 @@ public class TVRFloorDataManager : MonoBehaviour
     
     private TVRParser _parser;
     
-    private static readonly int Rows = 6;
-    private static readonly int Columns = 6;
+    public static readonly int Rows = 6;
+    public static readonly int Columns = 6;
 
     [HideInInspector] public double[,] FloorData { get; set; } = new double[Rows, Columns];
-    private static double[,] _floorDataRaw = new double[Rows, Columns];
-    private static double[,,] _calibrationData = new double[Rows, Columns, 3];
+    public double[,] _floorDataRaw = new double[Rows, Columns];
+    public double[][,] _calibrationData = new double[3][,];
     // calibrationData[行, 列, {ベースライン値, 最小値, 最大値}]
     
     private static bool isCalibrationSequence = false;
@@ -36,6 +36,15 @@ public class TVRFloorDataManager : MonoBehaviour
     void Start()
     {
         _parser = FindObjectOfType<TVRParser>();
+        InitializeCalibrationData();
+    }
+    
+    private void InitializeCalibrationData()
+    {
+        // 各配列の初期化
+        _calibrationData[0] = new double[Rows, Columns]; // ベースライン値
+        _calibrationData[1] = new double[Rows, Columns]; // 最小値
+        _calibrationData[2] = new double[Rows, Columns]; // 最大値
     }
 
     // Update is called once per frame
@@ -60,6 +69,9 @@ public class TVRFloorDataManager : MonoBehaviour
         
         // normalize
         FloorData = NormalizeFloorData(FloorData, _calibrationData);
+        
+        // ignore dead cells
+        IgnoreDeadCells();
     }
     
     private static double[,] SortFloorData(double[,] floorData)
@@ -98,7 +110,7 @@ public class TVRFloorDataManager : MonoBehaviour
         }
     };
     
-    private double[,] NormalizeFloorData(double[,] floorData, double[,,] calibrationData)
+    private double[,] NormalizeFloorData(double[,] floorData, double[][,] calibrationData)
     {
         int rows = floorData.GetLength(0);
         int columns = floorData.GetLength(1);
@@ -108,8 +120,8 @@ public class TVRFloorDataManager : MonoBehaviour
         {
             for (int j = 0; j < columns; j++)
             {
-                double baseline = calibrationData[i, j, 0];
-                double max = calibrationData[i, j, 2];
+                double baseline = calibrationData[0][i, j]; // ベースライン値
+                double max = calibrationData[2][i, j]; // 最大値
 
                 // 除算の分母が0にならないようにチェック
                 if (max - baseline != 0)
@@ -128,13 +140,13 @@ public class TVRFloorDataManager : MonoBehaviour
     }
 
     
-    private static void GetNeutralFloorData()
+    private void GetNeutralFloorData()
     {
         for (int i = 0; i < Rows; i++)
         {
             for (int j = 0; j < Columns; j++)
             {
-                _calibrationData[i, j, 0] = _floorDataRaw[i, j]; // ベースライン値を設定
+                _calibrationData[0][i, j] = _floorDataRaw[i, j]; // ベースライン値を設定
             }
         }
     }
@@ -147,14 +159,14 @@ public class TVRFloorDataManager : MonoBehaviour
         {
             for (int j = 0; j < Columns; j++)
             {
-                result[i, j] = matrixA[i, j] - _calibrationData[i, j, 0]; // ベースライン値を使用
+                result[i, j] = matrixA[i, j] - _calibrationData[0][i, j]; // ベースライン値を使用
             }
         }
 
         return result;
     }
 
-    private static void Calibration()
+    private void Calibration()
     {
         // n for neutral
         if(Input.GetKeyDown(KeyCode.N))
@@ -172,7 +184,7 @@ public class TVRFloorDataManager : MonoBehaviour
         }
     }
     
-    private static void UpdateCalibrationData()
+    private void UpdateCalibrationData()
     {
         for (int i = 0; i < Rows; i++)
         {
@@ -181,17 +193,32 @@ public class TVRFloorDataManager : MonoBehaviour
                 double currentValue = _floorDataRaw[i, j];
 
                 // 最小値を更新
-                if (currentValue < _calibrationData[i, j, 1] || _calibrationData[i, j, 1] == 0)
+                if (currentValue < _calibrationData[1][i, j] || _calibrationData[1][i, j] == 0)
                 {
-                    _calibrationData[i, j, 1] = currentValue;
+                    _calibrationData[1][i, j] = currentValue;
                 }
 
                 // 最大値を更新
-                if (currentValue > _calibrationData[i, j, 2])
+                if (currentValue > _calibrationData[2][i, j])
                 {
-                    _calibrationData[i, j, 2] = currentValue;
+                    _calibrationData[2][i, j] = currentValue;
                 }
             }
+        }
+    }
+
+    private int[][] _deadCellList = new int[][]
+    {
+        new int[] {0, 5},
+        new int[] {3, 4},
+        new int[] {5, 0},
+    };
+    
+    private void IgnoreDeadCells()
+    {
+        for(int i = 0; i < _deadCellList.Length; i++)
+        {
+            FloorData[_deadCellList[i][0], _deadCellList[i][1]] = 0;
         }
     }
 }
