@@ -11,6 +11,12 @@ public class TVRSoarBoard : MonoBehaviour
     public bool isDescending = false;
     
     private Transform _transform;
+
+    private GameObject _head;
+    private Transform _headTransform;
+    public float headHeightDefault = 1.0f;
+    public float ascendThreshold = 0.1f;
+    public float descendThreshold = 0.3f;
     
     private GameObject[,] _modules = new GameObject[2,2];
     [SerializeField] private GameObject moduleFL;
@@ -51,6 +57,9 @@ public class TVRSoarBoard : MonoBehaviour
         
         _floorDataManager = FindObjectOfType<TVRFloorDataManager>();
         
+        _head = GameObject.Find("CenterEyeAnchor");
+        _headTransform = _head.GetComponent<Transform>();
+        
         _modules[0,0] = moduleFL;
         _modules[0,1] = moduleFR;
         _modules[1,0] = moduleBL;
@@ -68,8 +77,9 @@ public class TVRSoarBoard : MonoBehaviour
         UpdateMeanPressures();
         UpdateModuleColor();
 
-        isAscending = OVRInput.Get(OVRInput.RawButton.Y);
-        isDescending = OVRInput.Get(OVRInput.RawButton.X);
+        // isAscending = OVRInput.Get(OVRInput.RawButton.Y);
+        // isDescending = OVRInput.Get(OVRInput.RawButton.X);
+        DetectHeadMovement();
         
         if (isSoaring)
         {
@@ -91,6 +101,12 @@ public class TVRSoarBoard : MonoBehaviour
         {
             isCalibrationSequence = true;
             Debug.Log("SoarBoard Calibration sequence started.");
+        }
+        
+        if(OVRInput.GetDown(OVRInput.RawButton.B))
+        {
+            headHeightDefault = _headTransform.localPosition.y;
+            Debug.Log("Head height reset.");
         }
     }
     
@@ -313,5 +329,27 @@ public class TVRSoarBoard : MonoBehaviour
         }
 
         return normalizedData;
+    }
+
+    private void DetectHeadMovement()
+    {
+        // if head is moving up, descend
+        if(_headTransform.localPosition.y > headHeightDefault + ascendThreshold)
+        {
+            isAscending = false;
+            isDescending = true;
+        }
+        // if head is moving down, ascend
+        else if(_headTransform.localPosition.y < headHeightDefault - descendThreshold)
+        {
+            isDescending = false;
+            isAscending = true;
+        }
+        // if head is default position, stop ascending and descending
+        else
+        {
+            isAscending = false;
+            isDescending = false;
+        }
     }
 }
