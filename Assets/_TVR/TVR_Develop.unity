@@ -579,13 +579,13 @@ MonoBehaviour:
   moduleFR: {fileID: 1105422847}
   moduleBL: {fileID: 1819591525}
   moduleBR: {fileID: 83329721}
-  m: 0.1
+  m: 0.05
   v: {x: 0, y: 0, z: 0}
   a: {x: 0, y: 0, z: 0}
   ka: 1
-  av: 1
+  av: 5
   _moduleRadius: 0.5
-  momentOfInertia: 0.01
+  momentOfInertia: 0.8
   w: 0
   b: 0
   kb: 1
