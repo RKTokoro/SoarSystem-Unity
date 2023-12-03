@@ -11,6 +11,7 @@ public class TVRSoarBoard : MonoBehaviour
     public bool isDescending = false;
     public bool isBrakingPosition = false;
     public bool isBrakingRotation = false;
+    public bool invertVerticalMovement = false;
     
     private Transform _transform;
 
@@ -352,23 +353,47 @@ public class TVRSoarBoard : MonoBehaviour
 
     private void DetectHeadMovement()
     {
-        // if head is moving up, descend
-        if(_headTransform.localPosition.y > headHeightDefault + ascendThreshold)
+        if (!invertVerticalMovement)
         {
-            isAscending = false;
-            isDescending = true;
+            // if head is moving up, ascend
+            if(_headTransform.localPosition.y > headHeightDefault + ascendThreshold)
+            {
+                isDescending = false;
+                isAscending = true;
+            }
+            // if head is moving down, descend
+            else if(_headTransform.localPosition.y < headHeightDefault - descendThreshold)
+            {
+                isAscending = false;
+                isDescending = true;
+            }
+            // if head is default position, stop ascending and descending
+            else
+            {
+                isAscending = false;
+                isDescending = false;
+            }
         }
-        // if head is moving down, ascend
-        else if(_headTransform.localPosition.y < headHeightDefault - descendThreshold)
-        {
-            isDescending = false;
-            isAscending = true;
-        }
-        // if head is default position, stop ascending and descending
         else
         {
-            isAscending = false;
-            isDescending = false;
+            // if head is moving up, descend
+            if(_headTransform.localPosition.y > headHeightDefault + ascendThreshold)
+            {
+                isAscending = false;
+                isDescending = true;
+            }
+            // if head is moving down, ascend
+            else if(_headTransform.localPosition.y < headHeightDefault - descendThreshold)
+            {
+                isDescending = false;
+                isAscending = true;
+            }
+            // if head is default position, stop ascending and descending
+            else
+            {
+                isAscending = false;
+                isDescending = false;
+            }
         }
     }
 }
