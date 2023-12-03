@@ -575,6 +575,8 @@ MonoBehaviour:
   isSoaring: 0
   isAscending: 0
   isDescending: 0
+  isBrakingPosition: 0
+  isBrakingRotation: 0
   headHeightDefault: 1
   ascendThreshold: 0.1
   descendThreshold: 0.2
@@ -592,6 +594,8 @@ MonoBehaviour:
   w: 0
   b: 0
   kb: 1
+  brakePositionForce: 5
+  brakeRotationForce: 5
 --- !u!1 &837610965
 GameObject:
   m_ObjectHideFlags: 0
