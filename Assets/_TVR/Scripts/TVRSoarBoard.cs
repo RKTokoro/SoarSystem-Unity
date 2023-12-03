@@ -9,6 +9,8 @@ public class TVRSoarBoard : MonoBehaviour
     public bool isSoaring = false;
     public bool isAscending = false;
     public bool isDescending = false;
+    public bool isBrakingPosition = false;
+    public bool isBrakingRotation = false;
     
     private Transform _transform;
 
@@ -36,6 +38,7 @@ public class TVRSoarBoard : MonoBehaviour
     
     private Vector3 forceLF, forceRF, forceLB, forceRB;
     
+    // variables for position
     public float m = 1.0f;  // mass
     public Vector3 v;  // velocity
     public Vector3 a;  // acceleration
@@ -49,6 +52,9 @@ public class TVRSoarBoard : MonoBehaviour
     public float w;  // angular velocity
     public float b; // angular acceleration
     public float kb = 1.0f;
+    
+    public float brakePositionForce = 1.0f;
+    public float brakeRotationForce = 1.0f;
     
     // Start is called before the first frame update
     void Start()
@@ -80,6 +86,9 @@ public class TVRSoarBoard : MonoBehaviour
         // isAscending = OVRInput.Get(OVRInput.RawButton.Y);
         // isDescending = OVRInput.Get(OVRInput.RawButton.X);
         DetectHeadMovement();
+        
+        isBrakingPosition = OVRInput.Get(OVRInput.RawButton.RHandTrigger);
+        isBrakingRotation = OVRInput.Get(OVRInput.RawButton.RIndexTrigger);
         
         if (isSoaring)
         {
@@ -233,6 +242,11 @@ public class TVRSoarBoard : MonoBehaviour
         {
             acc.y = 0.0f - ka * v.y;
         }
+
+        if (isBrakingPosition)
+        {
+            acc -= brakePositionForce * v;
+        }
         
         return acc;
     }
@@ -253,6 +267,11 @@ public class TVRSoarBoard : MonoBehaviour
                + (2.0f * (float)floorData[1, 1])) 
               / (4 * momentOfInertia)) 
               - kb * w;
+        
+        if (isBrakingRotation)
+        {
+            acc -= brakeRotationForce * w;
+        }
         
         return acc;
     }
