@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,12 +24,15 @@ public class TVRSoarBoard : MonoBehaviour
     public float m = 1.0f;  // mass
     public Vector3 v;  // velocity
     public Vector3 a;  // acceleration
+    public float ka = 1.0f;
     
     // variables for rotation
     // soar board only rotates around y axis
-    public float i = 1.0f;  // moment of inertia
+    [SerializeField] private float _moduleRadius = 0.5f;
+    public float momentOfInertia = 1.0f;  // moment of inertia
     public float w;  // angular velocity
     public float b; // angular acceleration
+    public float kb = 1.0f;
     
     // Start is called before the first frame update
     void Start()
@@ -62,6 +66,7 @@ public class TVRSoarBoard : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space))
         {
             isSoaring = !isSoaring;
+            Reset();
         }
     }
     
@@ -118,21 +123,41 @@ public class TVRSoarBoard : MonoBehaviour
         }
     }
 
+    private void Reset()
+    {
+        _transform.position = Vector3.zero;
+        _transform.rotation = Quaternion.identity;
+        
+        a = Vector3.zero;
+        v = Vector3.zero;
+
+        b = 0.0f;
+        w = 0.0f;
+    }
+
     private void Soar()
     {
-        a = CalcAcceleration();
+        a = CalcAcceleration(v);
         v = CalcVelocity(v, a);
+
+        b = CalcAngularAcceleration(w);
+        w = CalcAngularVelocity(w, b);
+        
         Move();
         Rotate();
     }
     
-    private Vector3 CalcAcceleration()
+    private Vector3 CalcAcceleration(Vector3 v)
     {
         Vector3 acc = Vector3.zero;
         
-        acc.x = (float)(-_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] + _meanPressures[1, 1]) / m;
+        acc.x = 
+            ((float)(-_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] + _meanPressures[1, 1]) / m) 
+            - ka * v.x;
         acc.y = 0.0f;  // write it later
-        acc.z = (float)(_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] - _meanPressures[1, 1]) / m;
+        acc.z = 
+            ((float)(_meanPressures[0, 0] - _meanPressures[1, 0] + _meanPressures[0, 1] - _meanPressures[1, 1]) / m) 
+            - ka * v.z;
         
         return acc;
     }
@@ -141,6 +166,26 @@ public class TVRSoarBoard : MonoBehaviour
     {
         Vector3 v = pv + a * Time.deltaTime;
         return v;
+    }
+    
+    private float CalcAngularAcceleration(float w)
+    {
+        float acc = 0.0f;
+
+        acc = (((2.0f * (float)_meanPressures[0, 0]) 
+               - (2.0f * (float)_meanPressures[0, 1]) 
+               - (2.0f * (float)_meanPressures[1, 0]) 
+               + (2.0f * (float)_meanPressures[1, 1])) 
+              / (4 * momentOfInertia)) 
+              - kb * w;
+        
+        return acc;
+    }
+    
+    private float CalcAngularVelocity(float pw, float a)
+    {
+        float w = pw + a * Time.deltaTime;
+        return w;
     }
 
     private void Move()

@@ -577,12 +577,15 @@ MonoBehaviour:
   moduleFR: {fileID: 1105422847}
   moduleBL: {fileID: 1819591525}
   moduleBR: {fileID: 83329721}
-  m: 1
+  m: 0.2
   v: {x: 0, y: 0, z: 0}
   a: {x: 0, y: 0, z: 0}
-  i: 1
+  ka: 1
+  _moduleRadius: 0.5
+  momentOfInertia: 0.1
   w: 0
   b: 0
+  kb: 1
 --- !u!1 &938865165
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,7 +602,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &938865166
 Transform:
   m_ObjectHideFlags: 0
