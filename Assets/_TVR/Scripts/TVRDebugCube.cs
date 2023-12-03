@@ -33,6 +33,8 @@ public class TVRDebugCube : MonoBehaviour
                 (gridY - 1) * spacing / 2, 
                 (gridZ - 1) * spacing / 2
                 );
+        
+        float maxDistance = Vector3.Distance(Vector3.zero, gridCenter);
 
         for (int x = 0; x < gridX; x++)
         {
@@ -52,8 +54,10 @@ public class TVRDebugCube : MonoBehaviour
                     cube.transform.position = new Vector3(posX, posY, posZ);
                     
                     // キューブのサイズを設定
-                    cube.transform.localScale = new Vector3(size, size, size);
-
+                    float distance = Vector3.Distance(cube.transform.position, Vector3.zero);
+                    float scaleFactor = distance / maxDistance;
+                    cube.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor) * size;
+                    
                     Material cubeMaterial = cube.GetComponent<Renderer>().material;
                     
                     // use transparent shader
