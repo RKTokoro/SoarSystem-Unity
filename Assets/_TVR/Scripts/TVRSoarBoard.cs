@@ -31,7 +31,7 @@ public class TVRSoarBoard : MonoBehaviour
     private static TVRFloorDataManager _floorDataManager;
     
     private double[,] _pressuresMean = new double[2, 2];
-    private double[,] _pressuresNormalized = new double[2, 2];
+    public double[,] _pressuresNormalized = new double[2, 2];
     private double[,] _pressuresMeanMax = new double[2, 2];
     private double[,] _pressuresMeanMin = new double[2, 2];
     
