@@ -12,6 +12,7 @@ public class TVRSoarBoard : MonoBehaviour
     public bool isBrakingPosition = false;
     public bool isBrakingRotation = false;
     public bool invertVerticalMovement = false;
+    public bool isAutonomous = false;
     
     private Transform _transform;
 
@@ -37,7 +38,7 @@ public class TVRSoarBoard : MonoBehaviour
     
     private static bool isCalibrationSequence = false;
     
-    private Vector3 forceLF, forceRF, forceLB, forceRB;
+    public Vector3 forceLF, forceRF, forceLB, forceRB;
     
     // variables for position
     public float m = 1.0f;  // mass
@@ -83,15 +84,12 @@ public class TVRSoarBoard : MonoBehaviour
     {
         UpdateMeanPressures();
         UpdateModuleColor();
-
-        // isAscending = OVRInput.Get(OVRInput.RawButton.Y);
-        // isDescending = OVRInput.Get(OVRInput.RawButton.X);
         DetectHeadMovement();
         
         isBrakingPosition = OVRInput.Get(OVRInput.RawButton.RHandTrigger);
         isBrakingRotation = OVRInput.Get(OVRInput.RawButton.RIndexTrigger);
         
-        if (isSoaring)
+        if (isSoaring || isAutonomous)
         {
             Soar();
         }
@@ -188,19 +186,24 @@ public class TVRSoarBoard : MonoBehaviour
     private void Soar()
     {
         _pressuresNormalized = Normalize(_pressuresMean, _pressuresMeanMin, _pressuresMeanMax);
-        a = CalcAcceleration(_pressuresNormalized, v);
+        
+        if (!isAutonomous)
+        {
+            CalcForces(_pressuresNormalized);
+        }
+        
+        a = CalcAcceleration(v);
         v = CalcVelocity(v, a);
 
-        b = CalcAngularAcceleration(_pressuresNormalized, w);
+        b = CalcAngularAcceleration(w);
         w = CalcAngularVelocity(w, b);
         
         Move();
         Rotate();
     }
-    
-    private Vector3 CalcAcceleration(double[,] floorData, Vector3 v)
+
+    private void CalcForces(double[,] floorData)
     {
-        Vector3 acc = Vector3.zero;
         Quaternion rot = _transform.rotation;
         
         forceLF = rot * new Vector3(
@@ -226,24 +229,36 @@ public class TVRSoarBoard : MonoBehaviour
             0.0f,
             -(float)floorData[1, 1]
         );
+    }
+    
+    // ma = F - ka * v
+    private Vector3 CalcAcceleration(Vector3 v)
+    {
+        Vector3 acc = Vector3.zero;
         
         Vector3 totalForce = forceLF + forceRF + forceLB + forceRB;
-        acc.x += totalForce.x / m - ka * v.x;
-        acc.z += totalForce.z / m - ka * v.z;
+        acc.x = totalForce.x / m - ka * v.x;
+        acc.z = totalForce.z / m - ka * v.z;
         
-        if (isAscending)
+        // vertical movement
+        if (!isAutonomous)
         {
-            acc.y = av - ka * v.y;;
-        }
-        else if (isDescending)
-        {
-            acc.y = -av - ka * v.y;
-        }
-        else
-        {
-            acc.y = 0.0f - ka * v.y;
+            if (isAscending)
+            {
+                acc.y = av;
+            }
+            else if (isDescending)
+            {
+                acc.y = -av;
+            }
+            else
+            {
+                acc.y = 0.0f;
+            }
         }
 
+        acc.y -= ka * v.y;
+        
         if (isBrakingPosition)
         {
             acc -= brakePositionForce * v;
@@ -258,16 +273,14 @@ public class TVRSoarBoard : MonoBehaviour
         return v;
     }
     
-    private float CalcAngularAcceleration(double[,] floorData, float w)
+    private float CalcAngularAcceleration(float w)
     {
         float acc = 0.0f;
 
-        acc = (((2.0f * (float)floorData[0, 0]) 
-               - (2.0f * (float)floorData[0, 1]) 
-               - (2.0f * (float)floorData[1, 0]) 
-               + (2.0f * (float)floorData[1, 1])) 
-              / (4 * momentOfInertia)) 
-              - kb * w;
+        acc = ((2.0f * forceLF.magnitude)
+               - (2.0f * forceRF.magnitude)
+               - (2.0f * forceLB.magnitude) 
+               + (2.0f * forceRB.magnitude)) / (4 * momentOfInertia) - kb * w;
         
         if (isBrakingRotation)
         {
