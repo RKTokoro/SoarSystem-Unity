@@ -210,8 +210,9 @@ public class TVRFloorDataManager : MonoBehaviour
     private int[][] _deadCellList = new int[][]
     {
         new int[] {0, 5},
+        new int[] {1, 0},
         new int[] {3, 4},
-        new int[] {5, 0},
+        new int[] {5, 0}
     };
     
     private void IgnoreDeadCells()
