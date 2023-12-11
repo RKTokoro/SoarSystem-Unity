@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
 
@@ -8,25 +9,12 @@ public class ImageRecorder : MonoBehaviour
 {
     private TVRFloorDataManager _floorDataManager;
     
-    // 6x6の配列
     private double[,] array = new double[6, 6];
-
-    // ベースの保存先パス
     private string baseSavePath = "Assets/RecordData"; 
-
-    // 現在の記録セッションのディレクトリパス
     private string currentSessionPath;
-
-    // フレームカウンタ
     private int frameCount = 0;
-
-    // 記録を開始するかどうか
     private bool startRecording = false;
-
-    // 記録開始からの経過時間
     private float elapsedTime = 0f;
-
-    // 記録する時間の長さ（秒）
     [SerializeField] private float recordingTime = 5f;
 
     private void Start()
@@ -37,12 +25,7 @@ public class ImageRecorder : MonoBehaviour
 
     void Update()
     {
-        if (OVRInput.GetDown(OVRInput.RawButton.X) || Input.GetKeyDown(KeyCode.R))
-        {
-            StartNewSession();
-            Debug.Log("Recording started.");
-        }
-
+        /*
         if (startRecording)
         {
             // 配列を更新
@@ -61,6 +44,7 @@ public class ImageRecorder : MonoBehaviour
                 Debug.Log("Recording stopped.");
             }
         }
+        */
     }
 
     void StartNewSession()
@@ -123,5 +107,35 @@ public class ImageRecorder : MonoBehaviour
         // Debug.Log("image saved.");
 
         Destroy(texture);
+    }
+
+    async Task SaveArrayAsImageAsync()
+    {
+        int width = 6;
+        int height = 6;
+        
+        while (frameCount < 360) 
+        {
+            // arrayを更新
+            UpdateArray();
+            
+            SaveArrayAsImage(frameCount);
+            
+            // フレームカウンタをインクリメント
+            frameCount++;
+            
+            // 1/60 秒待機
+            await Task.Delay(TimeSpan.FromSeconds(1.0 / 60));
+        }
+        
+        // whileを抜けたら終了
+        Debug.Log("Recording stopped.");
+    }
+    
+    public void StartRecording()
+    {
+        StartNewSession();
+        Debug.Log("Recording started.");
+        SaveArrayAsImageAsync();
     }
 }
