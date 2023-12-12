@@ -190,12 +190,11 @@ public class TVRSoarBoard : MonoBehaviour
         if (!isAutonomous)
         {
             CalcForces(_pressuresNormalized);
+            a = CalcAcceleration(v);
+            b = CalcAngularAcceleration(w);
         }
         
-        a = CalcAcceleration(v);
         v = CalcVelocity(v, a);
-
-        b = CalcAngularAcceleration(w);
         w = CalcAngularVelocity(w, b);
         
         Move();
@@ -231,7 +230,6 @@ public class TVRSoarBoard : MonoBehaviour
         );
     }
     
-    // ma = F - ka * v
     private Vector3 CalcAcceleration(Vector3 v)
     {
         Vector3 acc = Vector3.zero;
