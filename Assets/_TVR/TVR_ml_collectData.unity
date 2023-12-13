@@ -1315,7 +1315,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorDataManager: {fileID: 667948223}
-  jsonFile: {fileID: 0}
+  jsonFile: {fileID: 4900000, guid: e1bc93632f2d38b46b30352491f5e725, type: 3}
 --- !u!1 &2048035439
 GameObject:
   m_ObjectHideFlags: 0
