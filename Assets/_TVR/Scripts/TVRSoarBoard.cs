@@ -126,20 +126,20 @@ public class TVRSoarBoard : MonoBehaviour
         // 左前
         _pressuresMean[0, 0] = 
             CalculateAveragePressure(
-                _floorDataManager.FloorData,
+                _floorDataManager.floorData.p,
                 0, 0, sensorsPerModule, sensorsPerModule);
         // 右前
         _pressuresMean[0, 1] = 
             CalculateAveragePressure(
-                _floorDataManager.FloorData, 
+                _floorDataManager.floorData.p, 
                 0, sensorsPerModule, sensorsPerModule, TVRFloorDataManager.Columns);
         // 左後
         _pressuresMean[1, 0] = 
-            CalculateAveragePressure(_floorDataManager.FloorData, 
+            CalculateAveragePressure(_floorDataManager.floorData.p, 
                 sensorsPerModule, 0, TVRFloorDataManager.Rows, sensorsPerModule);
         // 右後
         _pressuresMean[1, 1] = 
-            CalculateAveragePressure(_floorDataManager.FloorData, 
+            CalculateAveragePressure(_floorDataManager.floorData.p, 
                 sensorsPerModule, sensorsPerModule, TVRFloorDataManager.Rows, TVRFloorDataManager.Columns);
     }
 

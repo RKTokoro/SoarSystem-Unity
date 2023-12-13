@@ -52,9 +52,9 @@ public class DataCollecter : MonoBehaviour
     
     void UpdateArray()
     {
-        if (floorDataManager.FloorData != null)
+        if (floorDataManager.floorData != null)
         {
-            _floorDataArray = floorDataManager.FloorData;
+            _floorDataArray = floorDataManager.floorData.p;
             // Debug.Log("array updated.");
         }
         else

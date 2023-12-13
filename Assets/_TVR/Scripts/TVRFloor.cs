@@ -26,7 +26,7 @@ public class TVRFloor : MonoBehaviour
     void Update()
     {
         // update floor data
-        _floorData = _floorDataManager.FloorData;
+        _floorData = _floorDataManager.floorData.p;
         
         if(_floorData != null && !_floorIsSpawned)
         {
