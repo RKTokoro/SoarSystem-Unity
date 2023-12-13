@@ -13,7 +13,12 @@ public class DataCollecter : MonoBehaviour
     [SerializeField] private int fps = 60;
     [SerializeField] private int imageWidth = 6;
     [SerializeField] private int imageHeight = 6;
-
+    
+    void Start()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
+    
     // Update is called once per frame
     void Update()
     {
@@ -126,9 +131,42 @@ public class DataCollecter : MonoBehaviour
                 SaveArrayAsImage(frameCount);
                 Debug.Log("Saved image at " + frameCount.ToString("D3") + " frame.");
             }
+
+            if (frameCount % 5 == 0)
+            {
+                if (frameCount % (5 * 4) == 0)
+                {
+                    PlayRhythmSound(rhythmSound01);
+                }
+                else
+                {
+                    PlayRhythmSound(rhythmSound02);
+                }
+            }
+            
             frameCount++;
             yield return new WaitForSeconds(1.0f / fps);
         }
         soarBoard.a = Vector3.zero;
+    }
+    
+    [SerializeField] private AudioClip rhythmSound01;
+    [SerializeField] private AudioClip rhythmSound02;
+    private AudioSource _audioSource;
+    
+    private void PlayRhythmSound(AudioClip clip)
+    {
+        _audioSource.clip = clip;
+        float soundLength = clip.length;
+        Coroutine playSoundCoroutine = StartCoroutine(PlaySoundCoroutine(soundLength));
+        StopCoroutine(playSoundCoroutine);
+    }
+
+    IEnumerator PlaySoundCoroutine(float length)
+    {
+        _audioSource.Play();
+        yield return new WaitForSeconds(length);
+        _audioSource.Stop();
+        _audioSource.time = 0;
     }
 }
