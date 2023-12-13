@@ -171,7 +171,7 @@ public class TVRSoarBoard : MonoBehaviour
         }
     }
 
-    private void Reset()
+    public void Reset()
     {
         _transform.position = Vector3.zero;
         _transform.rotation = Quaternion.identity;

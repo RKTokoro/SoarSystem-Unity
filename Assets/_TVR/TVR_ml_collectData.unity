@@ -462,7 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   acceleration: {x: 0, y: 0, z: 1}
-  recordFrames: 300
+  recordFrames: 25
   bufferFrames: 5
   fps: 5
   imageWidth: 6
@@ -471,6 +471,7 @@ MonoBehaviour:
   soarBoard: {fileID: 8994113215890382147}
   rhythmSound01: {fileID: 8300000, guid: 7ae4fafe1d3c332439b4a67bbcf0b474, type: 3}
   rhythmSound02: {fileID: 8300000, guid: c76c273046fd3b6499abd60665bc0335, type: 3}
+  state: 5
 --- !u!82 &1006048729
 AudioSource:
   m_ObjectHideFlags: 0

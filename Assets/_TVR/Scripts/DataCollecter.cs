@@ -13,12 +13,45 @@ public class DataCollecter : MonoBehaviour
     [SerializeField] private int fps = 60;
     [SerializeField] private int imageWidth = 6;
     [SerializeField] private int imageHeight = 6;
-    
+
     void Start()
     {
         _audioSource = GetComponent<AudioSource>();
+
+        if (state == State.Forward)
+        {
+            acceleration = Vector3.forward;
+            _baseSavePath = "RecordData/01_Forward";
+        }
+        else if (state == State.Backward)
+        {
+            acceleration = Vector3.back;
+            _baseSavePath = "RecordData/02_Backward";
+        }
+        else if (state == State.Left)
+        {
+            acceleration = Vector3.left;
+            _baseSavePath = "RecordData/03_Left";
+        }
+        else if (state == State.Right)
+        {
+            acceleration = Vector3.right;
+            _baseSavePath = "RecordData/04_Right";
+        }
+        else if (state == State.Up)
+        {
+            acceleration = Vector3.up;
+            _baseSavePath = "RecordData/05_Up";
+        }
+        else if (state == State.Down)
+        {
+            acceleration = Vector3.down;
+            _baseSavePath = "RecordData/06_Down";
+        }
+        
+        Debug.Log("Acceleration: " + acceleration);
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -37,7 +70,7 @@ public class DataCollecter : MonoBehaviour
     [SerializeField] private TVRSoarBoard soarBoard;
     
     private double[,] _floorDataArray = new double[6, 6];
-    private readonly string _baseSavePath = "RecordData"; 
+    private string _baseSavePath = "RecordData"; 
     private string _currentSessionPath;
     private string _timestamp;
 
@@ -93,31 +126,6 @@ public class DataCollecter : MonoBehaviour
         Destroy(texture);
     }
     
-    private async Task CollectDataAsync(int recordFrameCount, int fps, Vector3 a)
-    {
-        StartNewSession();
-        int frameCount = 0;
-        
-        while (frameCount < recordFrameCount)
-        {
-            // update floor data
-            UpdateArray();
-            
-            // update soar board acceleration
-            soarBoard.a = a;
-            
-            // save image
-            SaveArrayAsImage(frameCount);
-            Debug.Log("Saved image at " + frameCount.ToString("D3") + " frame.");
-            
-            // increment frame count
-            frameCount++;
-            await Task.Delay(1000 / fps);
-        }
-        
-        soarBoard.a = Vector3.zero;
-    }
-
     private IEnumerator CollectDataCoroutine(int recordFrameCount, int bufferFrameCount, int fps, Vector3 a)
     {
         StartNewSession();
@@ -148,7 +156,12 @@ public class DataCollecter : MonoBehaviour
             yield return new WaitForSeconds(1.0f / fps);
         }
         soarBoard.a = Vector3.zero;
+        soarBoard.Reset();
+        Debug.Log("Finished recording.");
     }
+    
+    // audio
+    // ------------------------------
     
     [SerializeField] private AudioClip rhythmSound01;
     [SerializeField] private AudioClip rhythmSound02;
@@ -169,4 +182,22 @@ public class DataCollecter : MonoBehaviour
         _audioSource.Stop();
         _audioSource.time = 0;
     }
+    
+    // ------------------------------
+    
+    // enum
+    // ------------------------------
+    public enum State
+    {
+        Forward,
+        Backward,
+        Left,
+        Right,
+        Up,
+        Down
+    }
+    
+    public State state = State.Forward;
+    
+    
 }
