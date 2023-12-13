@@ -45,6 +45,9 @@ public class TVRCalibrationJsonManager : MonoBehaviour
 {
     [SerializeField] private TVRFloorDataManager floorDataManager;
     
+    public TextAsset jsonFile;
+    private CalibrationData calibrationData;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -60,6 +63,11 @@ public class TVRCalibrationJsonManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.J))
         {
             SaveCalibrationDataToJson();
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadCalibrationDataFromJson();
         }
     }
     
@@ -80,5 +88,54 @@ public class TVRCalibrationJsonManager : MonoBehaviour
         // ファイルに書き込み
         File.WriteAllText(filePath, jsonData);
         Debug.Log("Calibration data saved to: " + filePath);
+    }
+    
+    private void LoadCalibrationDataFromJson()
+    {
+        if (jsonFile != null)
+        {
+            // JSONファイルの内容を文字列として取得
+            string jsonData = jsonFile.text;
+
+            // 文字列をSerializableCalibrationDataにデシリアライズ
+            SerializableCalibrationData loadedData = JsonUtility.FromJson<SerializableCalibrationData>(jsonData);
+
+            // SerializableCalibrationDataをCalibrationDataに変換
+            calibrationData = ConvertToCalibrationData(loadedData);
+
+            // CalibrationDataをTVRFloorDataManagerにセット
+            floorDataManager.calibrationData = calibrationData;
+        }
+    }
+    
+    private CalibrationData ConvertToCalibrationData(SerializableCalibrationData serializableData)
+    {
+        CalibrationData newCalibrationData = new CalibrationData();
+
+        // baseLineの変換
+        newCalibrationData.baseLine.p = ConvertTo2DArray(serializableData.baseLine.p, 6, 6);
+
+        // maxの変換
+        newCalibrationData.max.p = ConvertTo2DArray(serializableData.max.p, 6, 6);
+
+        // minの変換
+        newCalibrationData.min.p = ConvertTo2DArray(serializableData.min.p, 6, 6);
+
+        return newCalibrationData;
+    }
+
+    private double[,] ConvertTo2DArray(double[] array, int rows, int cols)
+    {
+        double[,] twoDArray = new double[rows, cols];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                twoDArray[i, j] = array[i * cols + j];
+            }
+        }
+
+        return twoDArray;
     }
 }

@@ -321,6 +321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 414e9255eed22364390060cbe144c324, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parser: {fileID: 0}
 --- !u!1 &938865165
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,7 +522,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &1204032392
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1314,6 +1315,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorDataManager: {fileID: 667948223}
+  jsonFile: {fileID: 0}
 --- !u!1 &2048035439
 GameObject:
   m_ObjectHideFlags: 0
