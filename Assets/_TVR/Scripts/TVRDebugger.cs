@@ -27,9 +27,10 @@ public class TVRDebugger : MonoBehaviour
         floorDataText.text = "Lorem ipsum dolor sit amet,";
         if (floorDataManager != null && floorDataText != null)
         {
-            string dataString = "FloorData:\n" + MatrixToString(floorDataManager.FloorData) +
-                                "\nFloorDataRaw:\n" + MatrixToString(floorDataManager._floorDataRaw) +
-                                "\nCalibrationData:\n" + MatrixToString(floorDataManager._calibrationData[0]);
+            string dataString = "FloorData:\n" + MatrixToString(floorDataManager.floorData.p) +
+                                "\nFloorDataRaw:\n" + MatrixToString(floorDataManager.floorDataRaw.p) +
+                                "\nCalibrationDataMin:\n" + MatrixToString(floorDataManager.calibrationData.min.p) +
+                                "\nCalibrationDataMax:\n" + MatrixToString(floorDataManager.calibrationData.max.p);
 
             floorDataText.text = dataString;
         }
