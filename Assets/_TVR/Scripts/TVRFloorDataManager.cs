@@ -1,5 +1,19 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System.IO;
+
+public class FloorData
+{
+    public double[,] p = new double[6,6];
+}
+
+public class CalibrationData
+{
+    public FloorData baseLine = new FloorData();
+    public FloorData max = new FloorData();
+    public FloorData min = new FloorData();
+}
 
 public class TVRFloorDataManager : MonoBehaviour
 {
@@ -20,14 +34,14 @@ public class TVRFloorDataManager : MonoBehaviour
     
     /* ----------------------------------*/
     
-    private TVRParser _parser;
+    [SerializeField] private TVRParser parser;
     
     public static readonly int Rows = 6;
     public static readonly int Columns = 6;
 
-    [HideInInspector] public double[,] FloorData { get; set; } = new double[Rows, Columns];
-    public double[,] _floorDataRaw = new double[Rows, Columns];
-    public double[][,] _calibrationData = new double[3][,];
+    [HideInInspector] public FloorData floorData = new FloorData();
+    public FloorData floorDataRaw = new FloorData();
+    public CalibrationData calibrationData = new CalibrationData();
     // calibrationData[行, 列, {ベースライン値, 最小値, 最大値}]
     
     private static bool isCalibrationSequence = false;
@@ -35,24 +49,53 @@ public class TVRFloorDataManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _parser = FindObjectOfType<TVRParser>();
+        if (parser == null)
+        {
+            parser = FindObjectOfType<TVRParser>();
+        }
+        
         InitializeCalibrationData();
     }
     
     private void InitializeCalibrationData()
     {
-        // 各配列の初期化
-        _calibrationData[0] = new double[Rows, Columns]; // ベースライン値
-        _calibrationData[1] = new double[Rows, Columns]; // 最小値
-        _calibrationData[2] = new double[Rows, Columns]; // 最大値
+        // initialize floor data
+        floorData.p = new double[Rows, Columns];
+        
+        // initialize calibration data
+        calibrationData.baseLine = new FloorData();
+        calibrationData.max = new FloorData();
+        calibrationData.min = new FloorData();
+        
+        calibrationData.baseLine.p = new double[Rows, Columns];
+        calibrationData.max.p = new double[Rows, Columns];
+        calibrationData.min.p = new double[Rows, Columns];
+        
+        // ベースライン値と最大値を負の無限大で初期化
+        for (int row = 0; row < Rows; row++)
+        {
+            for (int col = 0; col < Columns; col++)
+            {
+                calibrationData.max.p[row, col] = double.NegativeInfinity;
+            }
+        }
+
+        // 最小値を正の無限大で初期化
+        for (int row = 0; row < Rows; row++)
+        {
+            for (int col = 0; col < Columns; col++)
+            {
+                calibrationData.min.p[row, col] = double.PositiveInfinity;
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         // update floor data
-        _floorDataRaw = _parser.floorData;
-        FloorData = SortFloorData(_floorDataRaw);
+        floorDataRaw = parser.floorData;
+        floorData.p = SortFloorData(floorDataRaw.p);
         
         if(Input.GetKeyDown(KeyCode.C))
         {
@@ -68,7 +111,7 @@ public class TVRFloorDataManager : MonoBehaviour
         }
         
         // normalize
-        FloorData = NormalizeFloorData(FloorData, _calibrationData);
+        floorData = NormalizeFloorData(floorData, calibrationData);
         
         // ignore dead cells
         IgnoreDeadCells();
@@ -110,71 +153,40 @@ public class TVRFloorDataManager : MonoBehaviour
         }
     };
     
-    private double[,] NormalizeFloorData(double[,] floorData, double[][,] calibrationData)
+    private FloorData NormalizeFloorData(FloorData floorData, CalibrationData calibrationData)
     {
-        int rows = floorData.GetLength(0);
-        int columns = floorData.GetLength(1);
-        double[,] normalizedData = new double[rows, columns];
+        int rows = floorData.p.GetLength(0);
+        int columns = floorData.p.GetLength(1);
+        FloorData normalizedData = new FloorData();
+        normalizedData.p = new double[rows, columns];
 
         for (int i = 0; i < rows; i++)
         {
             for (int j = 0; j < columns; j++)
             {
-                double baseline = calibrationData[0][i, j]; // ベースライン値
-                double max = calibrationData[2][i, j]; // 最大値
-
+                double min = calibrationData.min.p[i, j]; // 最小値
+                double max = calibrationData.max.p[i, j]; // 最大値
+                
                 // 除算の分母が0にならないようにチェック
-                if (max - baseline != 0)
+                if (max - min != 0)
                 {
-                    normalizedData[i, j] = (floorData[i, j] - baseline) / (max - baseline);
-                }
-                else
-                {
-                    // 最大値とベースラインが同じ場合、値を0または1に設定
-                    normalizedData[i, j] = (floorData[i, j] == max) ? 1 : 0;
+                    normalizedData.p[i, j] = (floorData.p[i, j] - min) / (max - min);
                 }
             }
         }
 
         return normalizedData;
     }
-
     
-    private void GetNeutralFloorData()
-    {
-        for (int i = 0; i < Rows; i++)
-        {
-            for (int j = 0; j < Columns; j++)
-            {
-                _calibrationData[0][i, j] = _floorDataRaw[i, j]; // ベースライン値を設定
-            }
-        }
-    }
-    
-    private double[,] SubtractMatrices(double[,] matrixA)
-    {
-        double[,] result = new double[Rows, Columns];
-
-        for (int i = 0; i < Rows; i++)
-        {
-            for (int j = 0; j < Columns; j++)
-            {
-                result[i, j] = matrixA[i, j] - _calibrationData[0][i, j]; // ベースライン値を使用
-            }
-        }
-
-        return result;
-    }
-
     private void Calibration()
     {
+        UpdateCalibrationData();
+        
         // n for neutral
         if(Input.GetKeyDown(KeyCode.N))
         {
             GetNeutralFloorData();
         }
-        
-        UpdateCalibrationData();
         
         // s for save
         if(Input.GetKeyDown(KeyCode.S))
@@ -184,24 +196,35 @@ public class TVRFloorDataManager : MonoBehaviour
         }
     }
     
+    private void GetNeutralFloorData()
+    {
+        for (int i = 0; i < Rows; i++)
+        {
+            for (int j = 0; j < Columns; j++)
+            {
+                calibrationData.baseLine.p[i, j] = floorData.p[i, j]; // ベースライン値を設定
+            }
+        }
+    }
+    
     private void UpdateCalibrationData()
     {
         for (int i = 0; i < Rows; i++)
         {
             for (int j = 0; j < Columns; j++)
             {
-                double currentValue = _floorDataRaw[i, j];
+                double currentValue = floorData.p[i, j];
 
                 // 最小値を更新
-                if (currentValue < _calibrationData[1][i, j] || _calibrationData[1][i, j] == 0)
+                if (currentValue < calibrationData.min.p[i, j])
                 {
-                    _calibrationData[1][i, j] = currentValue;
+                    calibrationData.min.p[i, j] = currentValue;
                 }
 
                 // 最大値を更新
-                if (currentValue > _calibrationData[2][i, j])
+                if (currentValue > calibrationData.max.p[i, j])
                 {
-                    _calibrationData[2][i, j] = currentValue;
+                    calibrationData.max.p[i, j] = currentValue;
                 }
             }
         }
@@ -209,17 +232,16 @@ public class TVRFloorDataManager : MonoBehaviour
 
     private int[][] _deadCellList = new int[][]
     {
-        new int[] {0, 5},
-        new int[] {1, 0},
-        new int[] {3, 4},
-        new int[] {5, 0}
+        new int[] {0, 3},
+        new int[] {2, 1},
+        new int[] {5, 2}
     };
     
     private void IgnoreDeadCells()
     {
         for(int i = 0; i < _deadCellList.Length; i++)
         {
-            FloorData[_deadCellList[i][0], _deadCellList[i][1]] = 0;
+            floorData.p[_deadCellList[i][0], _deadCellList[i][1]] = 0;
         }
     }
 }

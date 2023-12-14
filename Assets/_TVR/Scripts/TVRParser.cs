@@ -4,20 +4,21 @@ using UnityEngine.Serialization;
 public class TVRParser : MonoBehaviour
 {
     private TVRSerialHandler _serialHandler;
-    public double[,] floorData;
+    public FloorData floorData = new FloorData();
     private int _rows = 6;
     private int _columns = 6;
     
     void Start()
     {
         _serialHandler = FindObjectOfType<TVRSerialHandler>();
+        floorData.p = new double[_rows, _columns];
     }
     
     void Update()
     {
         if (_serialHandler.message != null)
         {
-            floorData = ParseStringToDoubleArray(_serialHandler.message, _rows, _columns);
+            floorData.p = ParseStringToDoubleArray(_serialHandler.message, _rows, _columns);
         }
     }
     
