@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Sentis;
+using System.Linq;
 
 public class MLModelLoader : MonoBehaviour
 {
@@ -11,19 +12,27 @@ public class MLModelLoader : MonoBehaviour
     private Model _runtimeModel;
     private IWorker _worker;
     public float[] results;
+    public int estimatedResult;
+
+    [SerializeField] private TVRFloorDataManager floorDataManager;
     
     void Start()
     {
         // Create the runtime model
         _runtimeModel = ModelLoader.Load(modelAsset);
-        
         // Create an engine
         _worker = WorkerFactory.CreateWorker(BackendType.GPUCompute, _runtimeModel);
+        
+        if(floorDataManager == null)
+        {
+            floorDataManager = FindFirstObjectByType<TVRFloorDataManager>();
+        }
     }
 
     private void Update()
     {
-        EstimateState();
+        inputTexture = floorDataManager.floorImageTexture;
+        EstimateResult();
     }
 
     private void OnDisable()
@@ -32,7 +41,7 @@ public class MLModelLoader : MonoBehaviour
         _worker.Dispose();
     }
 
-    private void EstimateState()
+    private void EstimateResult()
     {
         // Create input data as a tensor
         _inputTensor = TextureConverter.ToTensor(inputTexture, width:6, height:6, channels:1);
@@ -47,6 +56,7 @@ public class MLModelLoader : MonoBehaviour
         {
             _outputTensor.MakeReadable();
             results = _outputTensor.ToReadOnlyArray();
+            estimatedResult = System.Array.IndexOf(results, results.Max());
         }
     }
 }
