@@ -259,7 +259,7 @@ public class TVRFloorDataManager : MonoBehaviour
         {
             for(int j = 0; j < Columns; j++)
             {
-                floorImageTexture.SetPixel(i, j, new Color((float)floorData.p[i, j], (float)floorData.p[i, j], (float)floorData.p[i, j]));
+                floorImageTexture.SetPixel(j, Rows-1-i, new Color((float)floorData.p[i, j], (float)floorData.p[i, j], (float)floorData.p[i, j]));
             }
         }
         

@@ -3,23 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using TMPro;
+using UnityEngine.UI;
 
 public class TVRDebugger : MonoBehaviour
 {
-    public TVRSerialHandler serialHandler;
     public TVRFloorDataManager floorDataManager;
     public TextMeshProUGUI floorDataText;
+    public RawImage floorImageRawImage;
     
     // Start is called before the first frame update
     void Start()
     {
-        serialHandler = FindObjectOfType<TVRSerialHandler>();
+        if (floorDataManager == null)
+        {
+            floorDataManager = FindFirstObjectByType<TVRFloorDataManager>();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         DisplayData();
+        DisplayImage();
     }
     
     void DisplayData()
@@ -48,5 +53,10 @@ public class TVRDebugger : MonoBehaviour
             result += "\n";
         }
         return result;
+    }
+
+    void DisplayImage()
+    {
+        floorImageRawImage.texture = floorDataManager.floorImageTexture;
     }
 }
