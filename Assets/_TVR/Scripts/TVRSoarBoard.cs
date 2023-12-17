@@ -13,6 +13,7 @@ public class TVRSoarBoard : MonoBehaviour
     public bool isBrakingRotation = false;
     public bool invertVerticalMovement = false;
     public bool isAutonomous = false;
+    public bool isHeadTilting = false;
     
     private Transform _transform;
 
@@ -21,6 +22,7 @@ public class TVRSoarBoard : MonoBehaviour
     public float headHeightDefault = 1.0f;
     public float ascendThreshold = 0.1f;
     public float descendThreshold = 0.3f;
+    public Vector3 headRotationDefault = Vector3.zero;
     
     private GameObject[,] _modules = new GameObject[2,2];
     [SerializeField] private GameObject moduleFL;
@@ -51,8 +53,8 @@ public class TVRSoarBoard : MonoBehaviour
     // soar board only rotates around y axis
     [SerializeField] private float _moduleRadius = 0.5f;
     public float momentOfInertia = 1.0f;  // moment of inertia
-    public float w;  // angular velocity
-    public float b; // angular acceleration
+    public Vector3 w;  // angular velocity
+    public Vector3 b; // angular acceleration
     public float kb = 1.0f;
     
     public float brakePositionForce = 1.0f;
@@ -115,6 +117,8 @@ public class TVRSoarBoard : MonoBehaviour
         {
             headHeightDefault = _headTransform.localPosition.y;
             Debug.Log("Head height reset.");
+            headRotationDefault = _headTransform.localRotation.eulerAngles;
+            Debug.Log("Head rotation reset.");
         }
     }
     
@@ -179,10 +183,10 @@ public class TVRSoarBoard : MonoBehaviour
         a = Vector3.zero;
         v = Vector3.zero;
 
-        b = 0.0f;
-        w = 0.0f;
+        b = Vector3.zero;
+        w = Vector3.zero;
     }
-
+    
     private void Soar()
     {
         _pressuresNormalized = Normalize(_pressuresMean, _pressuresMeanMin, _pressuresMeanMax);
@@ -271,26 +275,36 @@ public class TVRSoarBoard : MonoBehaviour
         return v;
     }
     
-    private float CalcAngularAcceleration(float w)
+    private Vector3 CalcAngularAcceleration(Vector3 w)
     {
-        float acc = 0.0f;
+        Vector3 b = Vector3.zero;
 
-        acc = ((2.0f * forceLF.magnitude)
+        if (isHeadTilting)
+        {
+            float pitchDelta = _headTransform.localRotation.eulerAngles.x - headRotationDefault.x;
+            b.x = pitchDelta * Mathf.Deg2Rad - kb * w.x;
+        
+            float rollDelta = _headTransform.localRotation.eulerAngles.z - headRotationDefault.z;
+            b.z = rollDelta * Mathf.Deg2Rad - kb * w.z;
+        }
+        
+        b.y = ((2.0f * forceLF.magnitude)
                - (2.0f * forceRF.magnitude)
                - (2.0f * forceLB.magnitude) 
-               + (2.0f * forceRB.magnitude)) / (4 * momentOfInertia) - kb * w;
+               + (2.0f * forceRB.magnitude)) / (4 * momentOfInertia) - kb * w.y;
         
         if (isBrakingRotation)
         {
-            acc -= brakeRotationForce * w;
+            b -= brakeRotationForce * w;
         }
         
-        return acc;
+        return b;
     }
     
-    private float CalcAngularVelocity(float pw, float a)
+    private Vector3 CalcAngularVelocity(Vector3 pw, Vector3 b)
     {
-        float w = pw + a * Time.deltaTime;
+        // p for previous.
+        Vector3 w = pw + b * Time.deltaTime;
         return w;
     }
 
@@ -301,7 +315,7 @@ public class TVRSoarBoard : MonoBehaviour
     
     private void Rotate()
     {
-        _transform.Rotate(0, w * Mathf.Rad2Deg * Time.deltaTime, 0);
+        _transform.Rotate(w.x*Mathf.Rad2Deg * Time.deltaTime, w.y* Mathf.Rad2Deg * Time.deltaTime, w.z*Mathf.Rad2Deg * Time.deltaTime);
     }
 
     private void Calibrate()
