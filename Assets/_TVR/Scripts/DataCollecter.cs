@@ -88,7 +88,6 @@ public class DataCollecter : MonoBehaviour
 
     private void StartNewSession()
     {
-        _timestamp = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
         string relativePath = Path.Combine(baseSavePath, _stateSavePath);
         _currentSessionPath = Path.Combine(Application.dataPath, relativePath);
 
@@ -105,8 +104,8 @@ public class DataCollecter : MonoBehaviour
     
     private IEnumerator CollectDataCoroutine(int recordFrameCount, int bufferFrameCount, int fps, Vector3 a)
     {
-        // StartNewSession();
         int frameCount = 0;
+        _timestamp = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss");
         while (frameCount < recordFrameCount)
         {
             soarBoard.a = a;

@@ -119,6 +119,78 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &17195011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 17195012}
+  - component: {fileID: 17195014}
+  - component: {fileID: 17195013}
+  m_Layer: 5
+  m_Name: RawImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &17195012
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17195011}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 10800117631811301}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 120, y: 0}
+  m_SizeDelta: {x: 160, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &17195013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17195011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.5019608}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &17195014
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17195011}
+  m_CullTransparentMesh: 1
 --- !u!1 &280024267
 GameObject:
   m_ObjectHideFlags: 0
@@ -619,12 +691,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1006048726}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 2102896435}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1006048728
 MonoBehaviour:
@@ -644,11 +716,13 @@ MonoBehaviour:
   fps: 5
   imageWidth: 6
   imageHeight: 6
+  mlImageGenerator: {fileID: 636831984}
   floorDataManager: {fileID: 667948223}
   soarBoard: {fileID: 8994113215890382147}
+  baseSavePath: RecordData/v1217
   rhythmSound01: {fileID: 8300000, guid: 7ae4fafe1d3c332439b4a67bbcf0b474, type: 3}
   rhythmSound02: {fileID: 8300000, guid: c76c273046fd3b6499abd60665bc0335, type: 3}
-  state: 5
+  state: 0
 --- !u!82 &1006048729
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1462,7 +1536,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1604126161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1792,6 +1866,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 636831983}
+  - {fileID: 1006048727}
   - {fileID: 1604126162}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1810,6 +1885,7 @@ RectTransform:
   - {fileID: 7143570041834565388}
   - {fileID: 5553683139872328376}
   - {fileID: 231918553729176740}
+  - {fileID: 17195012}
   m_Father: {fileID: 1054048595}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -7055,6 +7131,8 @@ MonoBehaviour:
   heightIndicator: {fileID: 8489539459056556426}
   ascendIndicator: {fileID: 3396889362129785310}
   descendIndicator: {fileID: 5413870220547336056}
+  inputImageRawImage: {fileID: 17195013}
+  _mlImageGenerator: {fileID: 636831984}
   heightIndicatorScale: 200
 --- !u!33 &3039871416749914340
 MeshFilter:
@@ -41771,4 +41849,3 @@ SceneRoots:
   - {fileID: 280024268}
   - {fileID: 2241020578003017140}
   - {fileID: 1454493423}
-  - {fileID: 1006048727}
