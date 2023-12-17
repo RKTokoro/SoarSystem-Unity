@@ -3,23 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using TMPro;
+using UnityEngine.UI;
 
 public class TVRDebugger : MonoBehaviour
 {
-    public TVRSerialHandler serialHandler;
     public TVRFloorDataManager floorDataManager;
+    public MLImageGenerator mlImageGenerator;
     public TextMeshProUGUI floorDataText;
+    public TextMeshProUGUI trackingDataText;
+    public RawImage floorImageRawImage;
+    
+    [SerializeField] private GameObject centerEyeAnchor, leftHandAnchor, rightHandAnchor;
+    private Transform _headTransform, _leftHandTransform, _rightHandTransform;
     
     // Start is called before the first frame update
     void Start()
     {
-        serialHandler = FindObjectOfType<TVRSerialHandler>();
+        if (floorDataManager == null)
+        {
+            floorDataManager = FindFirstObjectByType<TVRFloorDataManager>();
+        }
+        
+        _headTransform = centerEyeAnchor.GetComponent<Transform>();
+        _leftHandTransform = leftHandAnchor.GetComponent<Transform>();
+        _rightHandTransform = rightHandAnchor.GetComponent<Transform>();
     }
 
     // Update is called once per frame
     void Update()
     {
         DisplayData();
+        DisplayImage();
     }
     
     void DisplayData()
@@ -33,6 +47,16 @@ public class TVRDebugger : MonoBehaviour
                                 "\nCalibrationDataMax:\n" + MatrixToString(floorDataManager.calibrationData.max.p);
 
             floorDataText.text = dataString;
+        }
+        
+        trackingDataText.text = "Lorem ipsum dolor sit amet,";
+        if (trackingDataText != null)
+        {
+            string dataString = "Head:\n" + _headTransform.localPosition.ToString("F2") + _headTransform.localRotation.eulerAngles.ToString("F2") +
+                                "\nLeftHand:\n" + _leftHandTransform.localPosition.ToString("F2") + _leftHandTransform.localRotation.eulerAngles.ToString("F2") +
+                                "\nRightHand:\n" + _rightHandTransform.localPosition.ToString("F2") + _rightHandTransform.localRotation.eulerAngles.ToString("F2");
+
+            trackingDataText.text = dataString;
         }
     }
 
@@ -48,5 +72,11 @@ public class TVRDebugger : MonoBehaviour
             result += "\n";
         }
         return result;
+    }
+
+    void DisplayImage()
+    {
+        // floorImageRawImage.texture = floorDataManager.floorImageTexture;
+        floorImageRawImage.texture = mlImageGenerator.inputTexture;
     }
 }

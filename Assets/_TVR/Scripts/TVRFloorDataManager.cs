@@ -43,6 +43,8 @@ public class TVRFloorDataManager : MonoBehaviour
     public FloorData floorDataRaw = new FloorData();
     public CalibrationData calibrationData = new CalibrationData();
     // calibrationData[行, 列, {ベースライン値, 最小値, 最大値}]
+
+    public Texture2D floorImageTexture;
     
     private static bool isCalibrationSequence = false;
     
@@ -88,6 +90,9 @@ public class TVRFloorDataManager : MonoBehaviour
                 calibrationData.min.p[row, col] = double.PositiveInfinity;
             }
         }
+
+        floorImageTexture = new Texture2D(Rows, Columns, TextureFormat.R16, false);
+        floorImageTexture.filterMode = FilterMode.Point;
     }
 
     // Update is called once per frame
@@ -115,6 +120,9 @@ public class TVRFloorDataManager : MonoBehaviour
         
         // ignore dead cells
         IgnoreDeadCells();
+        
+        // update floor image texture
+        UpdateFloorImageTexture();
     }
     
     private static double[,] SortFloorData(double[,] floorData)
@@ -234,7 +242,7 @@ public class TVRFloorDataManager : MonoBehaviour
     {
         new int[] {0, 3},
         new int[] {2, 1},
-        new int[] {5, 2}
+        new int[] {5, 2},
     };
     
     private void IgnoreDeadCells()
@@ -243,5 +251,18 @@ public class TVRFloorDataManager : MonoBehaviour
         {
             floorData.p[_deadCellList[i][0], _deadCellList[i][1]] = 0;
         }
+    }
+    
+    private void UpdateFloorImageTexture()
+    {
+        for(int i = 0; i < Rows; i++)
+        {
+            for(int j = 0; j < Columns; j++)
+            {
+                floorImageTexture.SetPixel(j, Rows-1-i, new Color((float)floorData.p[i, j], (float)floorData.p[i, j], (float)floorData.p[i, j]));
+            }
+        }
+        
+        floorImageTexture.Apply();
     }
 }

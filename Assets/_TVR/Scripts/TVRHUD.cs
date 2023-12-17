@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class TVRHUD : MonoBehaviour
 {
@@ -15,6 +17,11 @@ public class TVRHUD : MonoBehaviour
     private RectTransform _heightIndicatorRectTransform;
     private RectTransform _ascendIndicatorRectTransform;
     private RectTransform _descendIndicatorRectTransform;
+    [SerializeField] private RawImage inputImageRawImage;
+    [SerializeField] private MLImageGenerator _mlImageGenerator;
+
+    [SerializeField] private MLModelLoader modelLoader;
+    [SerializeField] private TextMeshProUGUI stateText;
     
     private Vector3 _heightIndicatorOrigin;
     
@@ -30,12 +37,24 @@ public class TVRHUD : MonoBehaviour
         _descendIndicatorRectTransform = descendIndicator.GetComponent<RectTransform>();
         
         _heightIndicatorOrigin = _heightIndicatorRectTransform.localPosition;
+        
+        if(_mlImageGenerator == null)
+        {
+            _mlImageGenerator = FindFirstObjectByType<MLImageGenerator>();
+        }
+
+        if (modelLoader == null)
+        {
+            modelLoader = FindFirstObjectByType<MLModelLoader>();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         UpdateHeightIndicator();
+        UpdateInputImage();
+        UpdateStateText();
     }
     
     private void UpdateHeightIndicator()
@@ -49,5 +68,15 @@ public class TVRHUD : MonoBehaviour
             _heightIndicatorOrigin + heightIndicatorScale * (_soarBoard.headHeightDefault + _soarBoard.ascendThreshold) * Vector3.up;
         _descendIndicatorRectTransform.localPosition =
             _heightIndicatorOrigin + heightIndicatorScale * (_soarBoard.headHeightDefault - _soarBoard.descendThreshold) * Vector3.up;
+    }
+    
+    private void UpdateInputImage()
+    {
+        inputImageRawImage.texture = _mlImageGenerator.inputTexture;
+    }
+
+    private void UpdateStateText()
+    {
+        stateText.text = modelLoader.estimatedResult.ToString();
     }
 }
