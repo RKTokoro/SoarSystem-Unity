@@ -17,6 +17,10 @@ public class MLModelLoader : MonoBehaviour
     [SerializeField] private TVRFloorDataManager floorDataManager;
     [SerializeField] private MLImageGenerator mlImageGenerator;
     
+    TextureTransform _textureTransform = 
+        new TextureTransform().SetDimensions(-1, -1, -1)
+            .SetTensorLayout(0,1,3,2);
+    
     void Start()
     {
         // Create the runtime model
@@ -38,6 +42,8 @@ public class MLModelLoader : MonoBehaviour
     private void Update()
     {
         inputTexture = mlImageGenerator.inputTexture;
+        print("width : " + inputTexture.width);
+        print("height : " + inputTexture.height);
         EstimateResult();
     }
 
@@ -48,9 +54,9 @@ public class MLModelLoader : MonoBehaviour
     }
 
     private void EstimateResult()
-    {
+    { 
         // Create input data as a tensor
-        _inputTensor = TextureConverter.ToTensor(inputTexture, width:9, height:6, channels:1);
+        _inputTensor = TextureConverter.ToTensor(inputTexture, _textureTransform);
         
         // Run the model with the input data
         _worker.Execute(_inputTensor);
