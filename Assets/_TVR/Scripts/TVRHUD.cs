@@ -24,8 +24,11 @@ public class TVRHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI stateText;
     
     private Vector3 _heightIndicatorOrigin;
-    
     [SerializeField] private float heightIndicatorScale = 1.0f;
+    
+    [SerializeField] private RectTransform reticleRectTransform;
+    
+    private float _HUDDistance = 1.0f;
     
     // Start is called before the first frame update
     void Start()
@@ -47,6 +50,8 @@ public class TVRHUD : MonoBehaviour
         {
             modelLoader = FindFirstObjectByType<MLModelLoader>();
         }
+
+        _HUDDistance = this.GetComponent<Canvas>().planeDistance;
     }
 
     // Update is called once per frame
@@ -55,6 +60,7 @@ public class TVRHUD : MonoBehaviour
         UpdateHeightIndicator();
         UpdateInputImage();
         UpdateStateText();
+        UpdateReticle();
     }
     
     private void UpdateHeightIndicator()
@@ -78,5 +84,18 @@ public class TVRHUD : MonoBehaviour
     private void UpdateStateText()
     {
         stateText.text = modelLoader.estimatedResult.ToString();
+    }
+
+    private void UpdateReticle()
+    {
+        // roll
+        reticleRectTransform.localRotation = Quaternion.Euler(
+            new Vector3(0.0f, 0.0f, _head.transform.localRotation.eulerAngles.z - _soarBoard.headRotationDefault.z));
+        
+        // pitch
+        reticleRectTransform.localPosition = new Vector3(
+            0,
+            -Mathf.Sin(Mathf.Deg2Rad * (_head.transform.localRotation.eulerAngles.x - _soarBoard.headRotationDefault.x)) * _HUDDistance * 20.0f,
+            0);
     }
 }
