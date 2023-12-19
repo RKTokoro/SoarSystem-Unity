@@ -831,7 +831,7 @@ MonoBehaviour:
   mlImageGenerator: {fileID: 636831984}
   floorDataManager: {fileID: 667948223}
   soarBoard: {fileID: 8994113215890382147}
-  baseSavePath: RecordData/v1217
+  baseSavePath: RecordData/v1218
   rhythmSound01: {fileID: 8300000, guid: 7ae4fafe1d3c332439b4a67bbcf0b474, type: 3}
   rhythmSound02: {fileID: 8300000, guid: c76c273046fd3b6499abd60665bc0335, type: 3}
   state: 0
@@ -1971,7 +1971,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1604126161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2168,7 +2168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorDataManager: {fileID: 667948223}
-  jsonFile: {fileID: 4900000, guid: c4f1aa836bebb0e4ca96dc60759e93d0, type: 3}
+  jsonFile: {fileID: 4900000, guid: 8cd2c1c38528ded4e803838458be72b1, type: 3}
 --- !u!1 &1952482024 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 126d619cf4daa52469682f85c1378b4a,
@@ -2323,7 +2323,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22b87ba3d3fa9e0469330f1a72dc55f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portName: COM6
+  portName: COM8
   baurate: 9600
   message: 
 --- !u!4 &2048035441
@@ -42301,11 +42301,11 @@ MonoBehaviour:
   isBrakingRotation: 0
   invertVerticalMovement: 0
   isAutonomous: 0
-  isHeadTilting: 0
+  isHeadTilting: 1
   headHeightDefault: 1
   ascendThreshold: 0.1
   descendThreshold: 0.2
-  headRotationDefault: {x: 0, y: 0, z: 0}
+  headRotationDefault: {x: 0, y: 0, z: 0, w: 0}
   moduleFL: {fileID: 1981426207329339115}
   moduleFR: {fileID: 7153828540236904957}
   moduleBL: {fileID: 4630945050788426208}

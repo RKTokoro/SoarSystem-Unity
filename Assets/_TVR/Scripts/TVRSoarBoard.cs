@@ -22,7 +22,7 @@ public class TVRSoarBoard : MonoBehaviour
     public float headHeightDefault = 1.0f;
     public float ascendThreshold = 0.1f;
     public float descendThreshold = 0.3f;
-    public Vector3 headRotationDefault = Vector3.zero;
+    public Vector3 headRotationDefault;
     
     private GameObject[,] _modules = new GameObject[2,2];
     [SerializeField] private GameObject moduleFL;
@@ -59,6 +59,8 @@ public class TVRSoarBoard : MonoBehaviour
     
     public float brakePositionForce = 1.0f;
     public float brakeRotationForce = 1.0f;
+    
+    public float rotIntensity = 1.0f;
     
     // Start is called before the first frame update
     void Start()
@@ -281,11 +283,13 @@ public class TVRSoarBoard : MonoBehaviour
 
         if (isHeadTilting)
         {
-            float pitchDelta = _headTransform.localRotation.eulerAngles.x - headRotationDefault.x;
-            b.x = pitchDelta * Mathf.Deg2Rad - kb * w.x;
+            Quaternion rotDelta = _headTransform.localRotation * Quaternion.Inverse(Quaternion.Euler(headRotationDefault));
+            
+            float pitchDelta = rotDelta.x * rotIntensity;
+            b.x = pitchDelta - kb * w.x;
         
-            float rollDelta = _headTransform.localRotation.eulerAngles.z - headRotationDefault.z;
-            b.z = rollDelta * Mathf.Deg2Rad - kb * w.z;
+            float rollDelta = rotDelta.z * rotIntensity;
+            b.z = rollDelta - kb * w.z;
         }
         
         b.y = ((2.0f * forceLF.magnitude)
