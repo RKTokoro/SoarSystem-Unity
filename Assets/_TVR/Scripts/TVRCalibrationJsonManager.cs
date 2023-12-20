@@ -43,7 +43,7 @@ public class SerializableCalibrationData
 
 public class TVRCalibrationJsonManager : MonoBehaviour
 {
-    [SerializeField] private TVRFloorDataManager floorDataManager;
+    [SerializeField] private SoarFloorDataManager floorDataManager;
     
     public TextAsset jsonFile;
     private CalibrationData calibrationData;
@@ -53,7 +53,7 @@ public class TVRCalibrationJsonManager : MonoBehaviour
     {
         if(floorDataManager == null)
         {
-            floorDataManager = FindObjectOfType<TVRFloorDataManager>();
+            floorDataManager = FindObjectOfType<SoarFloorDataManager>();
         }
     }
 

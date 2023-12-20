@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TVRFloor : MonoBehaviour
 {
-    private TVRFloorDataManager _floorDataManager;
+    private SoarFloorDataManager _floorDataManager;
     private double[,] _floorData;
     
     private GameObject[,] _debugFloorTiles;
@@ -19,7 +19,7 @@ public class TVRFloor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _floorDataManager = FindObjectOfType<TVRFloorDataManager>();
+        _floorDataManager = FindObjectOfType<SoarFloorDataManager>();
     }
 
     // Update is called once per frame

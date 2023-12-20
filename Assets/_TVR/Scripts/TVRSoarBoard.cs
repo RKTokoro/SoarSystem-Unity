@@ -31,7 +31,7 @@ public class TVRSoarBoard : MonoBehaviour
     [SerializeField] private GameObject moduleBR;
     private Renderer[,] _moduleRenderers = new Renderer[2,2];
     
-    private static TVRFloorDataManager _floorDataManager;
+    private static SoarFloorDataManager _floorDataManager;
     
     private double[,] _pressuresMean = new double[2, 2];
     public double[,] _pressuresNormalized = new double[2, 2];
@@ -67,7 +67,7 @@ public class TVRSoarBoard : MonoBehaviour
     {
         _transform = GetComponent<Transform>();
         
-        _floorDataManager = FindObjectOfType<TVRFloorDataManager>();
+        _floorDataManager = FindObjectOfType<SoarFloorDataManager>();
         
         _head = GameObject.Find("CenterEyeAnchor");
         _headTransform = _head.GetComponent<Transform>();
@@ -138,15 +138,15 @@ public class TVRSoarBoard : MonoBehaviour
         _pressuresMean[0, 1] = 
             CalculateAveragePressure(
                 _floorDataManager.floorData.p, 
-                0, sensorsPerModule, sensorsPerModule, TVRFloorDataManager.Columns);
+                0, sensorsPerModule, sensorsPerModule, SoarFloorDataManager.Columns);
         // 左後
         _pressuresMean[1, 0] = 
             CalculateAveragePressure(_floorDataManager.floorData.p, 
-                sensorsPerModule, 0, TVRFloorDataManager.Rows, sensorsPerModule);
+                sensorsPerModule, 0, SoarFloorDataManager.Rows, sensorsPerModule);
         // 右後
         _pressuresMean[1, 1] = 
             CalculateAveragePressure(_floorDataManager.floorData.p, 
-                sensorsPerModule, sensorsPerModule, TVRFloorDataManager.Rows, TVRFloorDataManager.Columns);
+                sensorsPerModule, sensorsPerModule, SoarFloorDataManager.Rows, SoarFloorDataManager.Columns);
     }
 
     private static double CalculateAveragePressure(double[,] floorData, int startRow, int startColumn, int endRow, int endColumn)

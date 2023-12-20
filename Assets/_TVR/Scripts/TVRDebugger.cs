@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class TVRDebugger : MonoBehaviour
 {
-    public TVRFloorDataManager floorDataManager;
+    public SoarFloorDataManager floorDataManager;
     public MLImageGenerator mlImageGenerator;
     public TextMeshProUGUI floorDataText;
     public TextMeshProUGUI trackingDataText;
@@ -21,7 +21,7 @@ public class TVRDebugger : MonoBehaviour
     {
         if (floorDataManager == null)
         {
-            floorDataManager = FindFirstObjectByType<TVRFloorDataManager>();
+            floorDataManager = FindFirstObjectByType<SoarFloorDataManager>();
         }
         
         _headTransform = centerEyeAnchor.GetComponent<Transform>();

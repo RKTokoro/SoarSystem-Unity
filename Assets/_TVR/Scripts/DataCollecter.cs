@@ -77,7 +77,7 @@ public class DataCollecter : MonoBehaviour
     // ------------------------------
     // merge imagerecoeder and automover into this class
 
-    [SerializeField] private TVRFloorDataManager floorDataManager;
+    [SerializeField] private SoarFloorDataManager floorDataManager;
     [SerializeField] private TVRSoarBoard soarBoard;
     
     private double[,] _floorDataArray = new double[6, 6];
