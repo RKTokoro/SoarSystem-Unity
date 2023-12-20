@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using UnityEngine.Serialization;
 
-[System.Serializable]
+[Serializable]
 public class SerializableFloorData
 {
     public double[] p;
@@ -26,7 +23,7 @@ public class SerializableFloorData
     }
 }
 
-[System.Serializable]
+[Serializable]
 public class SerializableCalibrationData
 {
     public SerializableFloorData baseLine;
@@ -41,19 +38,19 @@ public class SerializableCalibrationData
     }
 }
 
-public class TVRCalibrationJsonManager : MonoBehaviour
+public class SoarJsonManager : MonoBehaviour
 {
     [SerializeField] private SoarFloorDataManager floorDataManager;
     
     public TextAsset jsonFile;
-    private CalibrationData calibrationData;
+    private CalibrationData _calibrationData;
     
     // Start is called before the first frame update
     void Start()
     {
         if(floorDataManager == null)
         {
-            floorDataManager = FindObjectOfType<SoarFloorDataManager>();
+            floorDataManager = FindFirstObjectByType<SoarFloorDataManager>();
         }
     }
 
@@ -101,10 +98,10 @@ public class TVRCalibrationJsonManager : MonoBehaviour
             SerializableCalibrationData loadedData = JsonUtility.FromJson<SerializableCalibrationData>(jsonData);
 
             // SerializableCalibrationDataをCalibrationDataに変換
-            calibrationData = ConvertToCalibrationData(loadedData);
+            _calibrationData = ConvertToCalibrationData(loadedData);
 
             // CalibrationDataをTVRFloorDataManagerにセット
-            floorDataManager.calibrationData = calibrationData;
+            floorDataManager.calibrationData = _calibrationData;
         }
     }
     
