@@ -22,16 +22,20 @@ public class SoarFloorDataManager : MonoBehaviour
         {
             parser = FindFirstObjectByType<SoarParser>();
         }
+
+        // initialize floor data
+        floorData = new FloorData();
+        floorData.p = new double[Rows, Columns];
+        floorDataRaw = new FloorData();
+        floorDataRaw.p = new double[Rows, Columns];
         
         InitializeCalibrationData();
     }
     
     private void InitializeCalibrationData()
-    {
-        // initialize floor data
-        floorData.p = new double[Rows, Columns];
-        
+    { 
         // initialize calibration data
+        calibrationData = new CalibrationData();
         calibrationData.baseLine = new FloorData();
         calibrationData.max = new FloorData();
         calibrationData.min = new FloorData();

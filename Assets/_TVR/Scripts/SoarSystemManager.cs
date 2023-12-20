@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class TVRSystemManager : MonoBehaviour
+public class SoarSystemManager : MonoBehaviour
 {
     [SerializeField] private int fps = 72;
     

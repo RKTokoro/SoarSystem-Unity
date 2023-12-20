@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
 
-public class TVRDebugger : MonoBehaviour
+public class SoarDebugger : MonoBehaviour
 {
     public SoarFloorDataManager floorDataManager;
     public MLImageGenerator mlImageGenerator;
@@ -76,7 +73,6 @@ public class TVRDebugger : MonoBehaviour
 
     void DisplayImage()
     {
-        // floorImageRawImage.texture = floorDataManager.floorImageTexture;
         floorImageRawImage.texture = mlImageGenerator.inputTexture;
     }
 }

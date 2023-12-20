@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class TVRSoarBoardModule : MonoBehaviour
+public class SoarBoardModule : MonoBehaviour
 {
-    private TVRSoarBoard _soarBoard;
+    private SoarBoard _soarBoard;
     
     private ParticleSystem[] _particleSystems;
     public enum ModuleType
@@ -20,7 +18,7 @@ public class TVRSoarBoardModule : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _soarBoard = GetComponentInParent<TVRSoarBoard>();
+        _soarBoard = GetComponentInParent<SoarBoard>();
         _particleSystems = GetComponentsInChildren<ParticleSystem>();
     }
 

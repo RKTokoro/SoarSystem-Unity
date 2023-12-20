@@ -1,13 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
+using TMPro;
 
-public class TVRHUD : MonoBehaviour
+public class SoarHUD : MonoBehaviour
 {
-    private TVRSoarBoard _soarBoard;
+    private SoarBoard _soarBoard;
     private GameObject _head;
     
     [SerializeField] private GameObject heightIndicator;
@@ -34,7 +31,7 @@ public class TVRHUD : MonoBehaviour
     void Start()
     {
         _head = GameObject.Find("CenterEyeAnchor");
-        _soarBoard = FindObjectOfType<TVRSoarBoard>();
+        _soarBoard = FindObjectOfType<SoarBoard>();
         _heightIndicatorRectTransform = heightIndicator.GetComponent<RectTransform>();
         _ascendIndicatorRectTransform = ascendIndicator.GetComponent<RectTransform>();
         _descendIndicatorRectTransform = descendIndicator.GetComponent<RectTransform>();

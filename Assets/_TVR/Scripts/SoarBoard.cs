@@ -1,16 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public class TVRSoarBoard : MonoBehaviour
+public class SoarBoard : MonoBehaviour
 {
     public bool isSoaring = false;
-    public bool isAscending = false;
-    public bool isDescending = false;
-    public bool isBrakingPosition = false;
-    public bool isBrakingRotation = false;
+    [HideInInspector] public bool isAscending = false;
+    [HideInInspector] public bool isDescending = false;
+    [HideInInspector] public bool isBrakingPosition = false;
+    [HideInInspector] public bool isBrakingRotation = false;
     public bool invertVerticalMovement = false;
     public bool isAutonomous = false;
     public bool isHeadTilting = false;

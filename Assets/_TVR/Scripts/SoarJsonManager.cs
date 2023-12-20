@@ -2,42 +2,6 @@ using System;
 using UnityEngine;
 using System.IO;
 
-[Serializable]
-public class SerializableFloorData
-{
-    public double[] p;
-
-    public SerializableFloorData(double[,] array)
-    {
-        int rows = array.GetLength(0);
-        int cols = array.GetLength(1);
-        p = new double[rows * cols];
-
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                p[i * cols + j] = array[i, j];
-            }
-        }
-    }
-}
-
-[Serializable]
-public class SerializableCalibrationData
-{
-    public SerializableFloorData baseLine;
-    public SerializableFloorData max;
-    public SerializableFloorData min;
-
-    public SerializableCalibrationData(CalibrationData calibrationData)
-    {
-        baseLine = new SerializableFloorData(calibrationData.baseLine.p);
-        max = new SerializableFloorData(calibrationData.max.p);
-        min = new SerializableFloorData(calibrationData.min.p);
-    }
-}
-
 public class SoarJsonManager : MonoBehaviour
 {
     [SerializeField] private SoarFloorDataManager floorDataManager;
@@ -134,5 +98,41 @@ public class SoarJsonManager : MonoBehaviour
         }
 
         return twoDArray;
+    }
+}
+
+[Serializable]
+public class SerializableFloorData
+{
+    public double[] p;
+
+    public SerializableFloorData(double[,] array)
+    {
+        int rows = array.GetLength(0);
+        int cols = array.GetLength(1);
+        p = new double[rows * cols];
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                p[i * cols + j] = array[i, j];
+            }
+        }
+    }
+}
+
+[Serializable]
+public class SerializableCalibrationData
+{
+    public SerializableFloorData baseLine;
+    public SerializableFloorData max;
+    public SerializableFloorData min;
+
+    public SerializableCalibrationData(CalibrationData calibrationData)
+    {
+        baseLine = new SerializableFloorData(calibrationData.baseLine.p);
+        max = new SerializableFloorData(calibrationData.max.p);
+        min = new SerializableFloorData(calibrationData.min.p);
     }
 }

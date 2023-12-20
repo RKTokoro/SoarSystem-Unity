@@ -13,6 +13,8 @@ public class SoarParser : MonoBehaviour
         {
             serialHandler = FindFirstObjectByType<SoarSerialHandler>();
         }
+
+        floorData = new FloorData();
         floorData.p = new double[rows, columns];
     }
     
