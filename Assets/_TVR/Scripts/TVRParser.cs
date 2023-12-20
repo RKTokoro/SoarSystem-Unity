@@ -3,14 +3,14 @@ using UnityEngine.Serialization;
 
 public class TVRParser : MonoBehaviour
 {
-    private TVRSerialHandler _serialHandler;
+    private SoarSerialHandler _serialHandler;
     public FloorData floorData = new FloorData();
     private int _rows = 6;
     private int _columns = 6;
     
     void Start()
     {
-        _serialHandler = FindObjectOfType<TVRSerialHandler>();
+        _serialHandler = FindObjectOfType<SoarSerialHandler>();
         floorData.p = new double[_rows, _columns];
     }
     
