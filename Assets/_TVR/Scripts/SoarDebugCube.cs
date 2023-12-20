@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public class TVRDebugCube : MonoBehaviour
+public class SoarDebugCube : MonoBehaviour
 {
     // グリッドのサイズを設定
     public int gridX = 5;

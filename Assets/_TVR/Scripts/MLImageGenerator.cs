@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MLImageGenerator : MonoBehaviour
 {
-    [SerializeField] private TVRFloorDataManager floorDataManager;
+    [SerializeField] private SoarFloorDataManager floorDataManager;
     [SerializeField] private GameObject centerEyeAnchor, leftHandAnchor, rightHandAnchor;
     private Transform _headTransform, _leftHandTransform, _rightHandTransform;
     [SerializeField] private float heightRange = 2.0f;
@@ -18,14 +18,14 @@ public class MLImageGenerator : MonoBehaviour
     {
         if(floorDataManager == null)
         {
-            floorDataManager = FindFirstObjectByType<TVRFloorDataManager>();
+            floorDataManager = FindFirstObjectByType<SoarFloorDataManager>();
         }
 
         _headTransform = centerEyeAnchor.GetComponent<Transform>();
         _leftHandTransform = leftHandAnchor.GetComponent<Transform>();
         _rightHandTransform = rightHandAnchor.GetComponent<Transform>();
         
-        inputTexture = new Texture2D(TVRFloorDataManager.Rows+3, TVRFloorDataManager.Columns, TextureFormat.R16, false);
+        inputTexture = new Texture2D(SoarFloorDataManager.Rows+3, SoarFloorDataManager.Columns, TextureFormat.R16, false);
         inputTexture.filterMode = FilterMode.Point;
     }
     
@@ -37,11 +37,11 @@ public class MLImageGenerator : MonoBehaviour
 
     void GenerateImage()
     {
-        for(int i = 0; i < TVRFloorDataManager.Rows; i++)
+        for(int i = 0; i < SoarFloorDataManager.Rows; i++)
         {
-            for(int j = 0; j < TVRFloorDataManager.Columns; j++)
+            for(int j = 0; j < SoarFloorDataManager.Columns; j++)
             {
-                inputTexture.SetPixel(j, TVRFloorDataManager.Rows-1-i, 
+                inputTexture.SetPixel(j, SoarFloorDataManager.Rows-1-i, 
                     new Color(
                     (float)floorDataManager.floorData.p[i, j], 
                     (float)floorDataManager.floorData.p[i, j], 
@@ -50,9 +50,9 @@ public class MLImageGenerator : MonoBehaviour
             }
         }
         
-        SetTransformToTexture(_headTransform, TVRFloorDataManager.Rows);
-        SetTransformToTexture(_leftHandTransform, TVRFloorDataManager.Rows + 1);
-        SetTransformToTexture(_rightHandTransform, TVRFloorDataManager.Rows + 2);
+        SetTransformToTexture(_headTransform, SoarFloorDataManager.Rows);
+        SetTransformToTexture(_leftHandTransform, SoarFloorDataManager.Rows + 1);
+        SetTransformToTexture(_rightHandTransform, SoarFloorDataManager.Rows + 2);
         
         inputTexture.Apply();
     }

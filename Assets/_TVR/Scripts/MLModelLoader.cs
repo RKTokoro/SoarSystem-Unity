@@ -14,7 +14,7 @@ public class MLModelLoader : MonoBehaviour
     public float[] results;
     public int estimatedResult;
 
-    [SerializeField] private TVRFloorDataManager floorDataManager;
+    [SerializeField] private SoarFloorDataManager floorDataManager;
     [SerializeField] private MLImageGenerator mlImageGenerator;
     
     TextureTransform _textureTransform = 
@@ -30,7 +30,7 @@ public class MLModelLoader : MonoBehaviour
         
         if(floorDataManager == null)
         {
-            floorDataManager = FindFirstObjectByType<TVRFloorDataManager>();
+            floorDataManager = FindFirstObjectByType<SoarFloorDataManager>();
         }
         
         if(mlImageGenerator == null)

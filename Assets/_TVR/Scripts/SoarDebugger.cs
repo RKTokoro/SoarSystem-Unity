@@ -1,13 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
 
-public class TVRDebugger : MonoBehaviour
+public class SoarDebugger : MonoBehaviour
 {
-    public TVRFloorDataManager floorDataManager;
+    public SoarFloorDataManager floorDataManager;
     public MLImageGenerator mlImageGenerator;
     public TextMeshProUGUI floorDataText;
     public TextMeshProUGUI trackingDataText;
@@ -21,7 +18,7 @@ public class TVRDebugger : MonoBehaviour
     {
         if (floorDataManager == null)
         {
-            floorDataManager = FindFirstObjectByType<TVRFloorDataManager>();
+            floorDataManager = FindFirstObjectByType<SoarFloorDataManager>();
         }
         
         _headTransform = centerEyeAnchor.GetComponent<Transform>();
@@ -76,7 +73,6 @@ public class TVRDebugger : MonoBehaviour
 
     void DisplayImage()
     {
-        // floorImageRawImage.texture = floorDataManager.floorImageTexture;
         floorImageRawImage.texture = mlImageGenerator.inputTexture;
     }
 }

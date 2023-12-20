@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using System;
 using System.IO.Ports;
 using UnityEngine;
@@ -11,23 +8,23 @@ using UniRx;
 // https://coworking-nagaokakyo.jp/note/post-3324/
 // https://nn-hokuson.hatenablog.com/entry/2017/09/12/192024
 
-public class TVRSerialHandler : MonoBehaviour
+public class SoarSerialHandler : MonoBehaviour
 {
-    public string portName;
-    public int baurate = 9600;
-
-    SerialPort serial;
-    bool isLoop = true;
+    [SerializeField] private string portName;
+    [SerializeField] private int baudRate = 9600;
+    
+    private SerialPort _serialPort;
+    private bool _isLoop = true;
     
     [HideInInspector] public string message;
 
     void Start () 
     {
-        this.serial = new SerialPort (portName, baurate, Parity.None, 8, StopBits.One);
+        this._serialPort = new SerialPort (portName, baudRate, Parity.None, 8, StopBits.One);
 
         try
         {
-            this.serial.Open();
+            this._serialPort.Open();
             // Debug.Log ("open serial port");
             
             Scheduler.ThreadPool.Schedule (() => ReadData ()).AddTo(this);
@@ -38,18 +35,18 @@ public class TVRSerialHandler : MonoBehaviour
         }
     }
 	
-    public void ReadData()
+    private void ReadData()
     {
         int bufferSize = 500; // バッファサイズを500バイトに設定
         byte[] buffer = new byte[bufferSize];
 
-        while (this.isLoop && this.serial.IsOpen)
+        while (this._isLoop && this._serialPort.IsOpen)
         {
             try
             {
-                if (this.serial.BytesToRead > 0)
+                if (this._serialPort.BytesToRead > 0)
                 {
-                    int bytesRead = this.serial.Read(buffer, 0, buffer.Length);
+                    int bytesRead = this._serialPort.Read(buffer, 0, buffer.Length);
                     message = System.Text.Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     // Debug.Log(message);
                 }
@@ -63,7 +60,7 @@ public class TVRSerialHandler : MonoBehaviour
 
     void OnDestroy()
     {
-        this.isLoop = false;
-        this.serial.Close ();
+        this._isLoop = false;
+        this._serialPort.Close ();
     }
 }

@@ -1,74 +1,44 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
-using System.IO;
 
-public class FloorData
+public class SoarFloorDataManager : MonoBehaviour
 {
-    public double[,] p = new double[6,6];
-}
-
-public class CalibrationData
-{
-    public FloorData baseLine = new FloorData();
-    public FloorData max = new FloorData();
-    public FloorData min = new FloorData();
-}
-
-public class TVRFloorDataManager : MonoBehaviour
-{
-    // singleton
-    public static TVRFloorDataManager floorDataManager;
-    private void Awake()
-    {
-        if (floorDataManager == null)
-        {
-            
-            floorDataManager = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-    
-    /* ----------------------------------*/
-    
-    [SerializeField] private TVRParser parser;
+    [SerializeField] private SoarParser parser;
     
     public static readonly int Rows = 6;
     public static readonly int Columns = 6;
-
-    [HideInInspector] public FloorData floorData = new FloorData();
-    public FloorData floorDataRaw = new FloorData();
-    public CalibrationData calibrationData = new CalibrationData();
-    // calibrationData[行, 列, {ベースライン値, 最小値, 最大値}]
-
-    public Texture2D floorImageTexture;
     
-    private static bool isCalibrationSequence = false;
+    public FloorData floorData;
+    [HideInInspector] public Texture2D floorImageTexture;
+    
+    public FloorData floorDataRaw;
+    public CalibrationData calibrationData;
+    
+    private static bool _isCalibrationSequence;
     
     // Start is called before the first frame update
     void Start()
     {
         if (parser == null)
         {
-            parser = FindObjectOfType<TVRParser>();
+            parser = FindFirstObjectByType<SoarParser>();
         }
+
+        // initialize floor data
+        floorData = new FloorData();
+        floorData.p = new double[Rows, Columns];
+        floorDataRaw = new FloorData();
+        floorDataRaw.p = new double[Rows, Columns];
         
         InitializeCalibrationData();
     }
     
     private void InitializeCalibrationData()
-    {
-        // initialize floor data
-        floorData.p = new double[Rows, Columns];
-        
+    { 
         // initialize calibration data
+        calibrationData = new CalibrationData();
         calibrationData.baseLine = new FloorData();
         calibrationData.max = new FloorData();
         calibrationData.min = new FloorData();
-        
         calibrationData.baseLine.p = new double[Rows, Columns];
         calibrationData.max.p = new double[Rows, Columns];
         calibrationData.min.p = new double[Rows, Columns];
@@ -104,12 +74,12 @@ public class TVRFloorDataManager : MonoBehaviour
         
         if(Input.GetKeyDown(KeyCode.C))
         {
-            isCalibrationSequence = true;
+            _isCalibrationSequence = true;
             Debug.Log("Calibration sequence started.");
         }
         
         // callibration
-        if (isCalibrationSequence)
+        if (_isCalibrationSequence)
         {
             Calibration();
             Debug.Log("Calibrating...");
@@ -199,7 +169,7 @@ public class TVRFloorDataManager : MonoBehaviour
         // s for save
         if(Input.GetKeyDown(KeyCode.S))
         {
-            isCalibrationSequence = false;
+            _isCalibrationSequence = false;
             Debug.Log("Calibration sequence ended.");
         }
     }
@@ -238,7 +208,7 @@ public class TVRFloorDataManager : MonoBehaviour
         }
     }
 
-    private int[][] _deadCellList = new int[][]
+    private readonly int[][] _deadCellList = new int[][]
     {
         new int[] {4, 3},
         new int[] {5, 5}
@@ -264,4 +234,16 @@ public class TVRFloorDataManager : MonoBehaviour
         
         floorImageTexture.Apply();
     }
+}
+
+public class FloorData
+{
+    public double[,] p = new double[6,6];
+}
+
+public class CalibrationData
+{
+    public FloorData baseLine = new FloorData();
+    public FloorData max = new FloorData();
+    public FloorData min = new FloorData();
 }
