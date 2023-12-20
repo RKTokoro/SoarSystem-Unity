@@ -576,7 +576,7 @@ GameObject:
   - component: {fileID: 667948222}
   - component: {fileID: 667948223}
   m_Layer: 0
-  m_Name: TVRFloorDataManager
+  m_Name: FloorDataManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

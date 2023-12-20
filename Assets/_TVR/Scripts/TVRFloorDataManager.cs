@@ -34,7 +34,7 @@ public class TVRFloorDataManager : MonoBehaviour
     
     /* ----------------------------------*/
     
-    [SerializeField] private TVRParser parser;
+    [SerializeField] private SoarParser parser;
     
     public static readonly int Rows = 6;
     public static readonly int Columns = 6;
@@ -53,7 +53,7 @@ public class TVRFloorDataManager : MonoBehaviour
     {
         if (parser == null)
         {
-            parser = FindObjectOfType<TVRParser>();
+            parser = FindObjectOfType<SoarParser>();
         }
         
         InitializeCalibrationData();

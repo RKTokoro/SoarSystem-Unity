@@ -1,24 +1,26 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public class TVRParser : MonoBehaviour
+public class SoarParser : MonoBehaviour
 {
-    private SoarSerialHandler _serialHandler;
-    public FloorData floorData = new FloorData();
-    private int _rows = 6;
-    private int _columns = 6;
+    [SerializeField] private SoarSerialHandler serialHandler;
+    public FloorData floorData;
+    [SerializeField] private int rows = 6;
+    [SerializeField] private int columns = 6;
     
     void Start()
     {
-        _serialHandler = FindObjectOfType<SoarSerialHandler>();
-        floorData.p = new double[_rows, _columns];
+        if (serialHandler == null)
+        {
+            serialHandler = FindFirstObjectByType<SoarSerialHandler>();
+        }
+        floorData.p = new double[rows, columns];
     }
     
     void Update()
     {
-        if (_serialHandler.message != null)
+        if (serialHandler.message != null)
         {
-            floorData.p = ParseStringToDoubleArray(_serialHandler.message, _rows, _columns);
+            floorData.p = ParseStringToDoubleArray(serialHandler.message, rows, columns);
         }
     }
     
@@ -35,7 +37,7 @@ public class TVRParser : MonoBehaviour
         // 配列のサイズが不適切な場合はエラーを返す
         if (splitData.Length != rows * columns)
         {
-            Debug.LogError("Data length does not match the specified array size.");
+            // Debug.LogError("Data length does not match the specified array size.");
             return null;
         }
 
@@ -53,7 +55,7 @@ public class TVRParser : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError($"Invalid data format: {splitData[index]}");
+                    // Debug.LogError($"Invalid data format: {splitData[index]}");
                     return null;
                 }
                 index++;
