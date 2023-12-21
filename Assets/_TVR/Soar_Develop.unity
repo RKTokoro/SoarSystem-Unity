@@ -796,7 +796,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1006048727
 Transform:
   m_ObjectHideFlags: 0
@@ -2126,7 +2126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorDataManager: {fileID: 667948223}
-  jsonFile: {fileID: 4900000, guid: 8cd2c1c38528ded4e803838458be72b1, type: 3}
+  jsonFile: {fileID: 4900000, guid: e54daff98617deb47b831d955b4302c3, type: 3}
 --- !u!1 &1952482024 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 126d619cf4daa52469682f85c1378b4a,
@@ -2281,7 +2281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22b87ba3d3fa9e0469330f1a72dc55f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portName: COM6
+  portName: COM8
   baudRate: 9600
   message: 
 --- !u!4 &2048035441
@@ -41750,7 +41750,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -100, y: 0}
+  m_AnchoredPosition: {x: -100, y: -200}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7153828540236904957
@@ -42284,7 +42284,7 @@ MonoBehaviour:
   kb: 1
   brakePositionForce: 5
   brakeRotationForce: 5
-  rotIntensity: 1
+  rotIntensity: 2
 --- !u!4 &9151843280066293277
 Transform:
   m_ObjectHideFlags: 0
