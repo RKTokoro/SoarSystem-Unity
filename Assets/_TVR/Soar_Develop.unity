@@ -2126,7 +2126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorDataManager: {fileID: 667948223}
-  jsonFile: {fileID: 4900000, guid: e54daff98617deb47b831d955b4302c3, type: 3}
+  jsonFile: {fileID: 4900000, guid: b15e16a972bc1ad43b870ca58cc0be45, type: 3}
 --- !u!1 &1952482024 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: 126d619cf4daa52469682f85c1378b4a,
@@ -2281,7 +2281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22b87ba3d3fa9e0469330f1a72dc55f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  portName: COM8
+  portName: COM6
   baudRate: 9600
   message: 
 --- !u!4 &2048035441
@@ -42259,7 +42259,7 @@ MonoBehaviour:
   isBrakingRotation: 0
   invertVerticalMovement: 0
   isAutonomous: 0
-  isHeadTilting: 1
+  isHeadTilting: 0
   headHeightDefault: 1
   ascendThreshold: 0.1
   descendThreshold: 0.2

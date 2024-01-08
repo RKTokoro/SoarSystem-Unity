@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using System.IO;
-using UnityEngine.Serialization;
 
 public class DataCollecter : MonoBehaviour
 {

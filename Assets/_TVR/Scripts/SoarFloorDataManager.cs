@@ -89,7 +89,10 @@ public class SoarFloorDataManager : MonoBehaviour
         floorData = NormalizeFloorData(floorData, calibrationData);
         
         // ignore dead cells
-        IgnoreDeadCells();
+        // IgnoreDeadCells();
+        
+        // interpolate dead cells
+        InterpolateDeadCells();
         
         // update floor image texture
         UpdateFloorImageTexture();
@@ -210,8 +213,11 @@ public class SoarFloorDataManager : MonoBehaviour
 
     private readonly int[][] _deadCellList = new int[][]
     {
-        new int[] {4, 3},
-        new int[] {5, 5}
+        new int[] {0, 3},
+        new int[] {2, 1},
+        new int[] {3, 2},
+        new int[] {4, 0},
+        new int[] {5, 2}
     };
     
     private void IgnoreDeadCells()
@@ -219,6 +225,47 @@ public class SoarFloorDataManager : MonoBehaviour
         for(int i = 0; i < _deadCellList.Length; i++)
         {
             floorData.p[_deadCellList[i][0], _deadCellList[i][1]] = 0;
+        }
+    }
+
+    private void InterpolateDeadCells()
+    {
+        for(int i = 0; i < _deadCellList.Length; i++)
+        {
+            // 上下左右のセルの平均値を計算する
+            double sum = 0;
+            int count = 0;
+            int row = _deadCellList[i][0];
+            int col = _deadCellList[i][1];
+            
+            if(1 < row)
+            {
+                sum += floorData.p[row-1, col];
+                count++;
+            }
+            
+            if(row < Rows-1)
+            {
+                sum += floorData.p[row+1, col];
+                count++;
+            }
+            
+            if(1 < col)
+            {
+                sum += floorData.p[row, col-1];
+                count++;
+            }
+            
+            if(col < Columns-1)
+            {
+                sum += floorData.p[row, col+1];
+                count++;
+            }
+
+            if (count > 0)
+            {
+                floorData.p[row, col] = sum / count;
+            }
         }
     }
     
