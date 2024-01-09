@@ -10,6 +10,7 @@ public class SoarShot : MonoBehaviour
     public float shotInterval = 0.1f;
     public GameObject target;
     
+    
     Coroutine _shotCoroutine;
     
     // Start is called before the first frame update
